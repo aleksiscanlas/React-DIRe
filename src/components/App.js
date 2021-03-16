@@ -1,6 +1,5 @@
 import React from "react"
 import Signup from "./Signup"
-import { Container } from "react-bootstrap"
 import { AuthProvider } from "../contexts/AuthContext"
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom"
 import Dashboard from "./Dashboard"
@@ -23,7 +22,7 @@ function App() {
           <Route path="/forgot-password" component={ForgotPassword} />
           <Route path="/" render={() => <div>404</div>}/>
         </Switch>
-      </AuthProvider>
+    </AuthProvider>
     </Router>
   )
 }

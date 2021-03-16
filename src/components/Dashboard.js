@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { Button, Image, Alert } from "react-bootstrap"
+import { Container, Row, Col, Button, Image, Alert } from "react-bootstrap"
 import { useAuth } from "../contexts/AuthContext"
 import { Link, useHistory } from "react-router-dom"
 import logo from "./images/dire-logo.png"
@@ -22,21 +22,20 @@ export default function Dashboard() {
   }
 
   return (
-    <>
-      <div className="container-fluid">
-        <div className="row">
-          <Image src={logo2}/>
-          <div className="col bg-secondary">
-              <Image className="img-responsive w-100 h-50" src={logo} />
+    <Container fluid className="text-center">
+        <Row> 
+        <Image src={logo2} className="d-sm-none d-md-block d-none d-sm-block"/>
+          <Col>
+              <Image src={logo} fluid/>
               {error && <Alert variant="danger">{error}</Alert>}
               <p><strong>Email:</strong> {currentUser.email}</p>
-              <Link to="/update-profile" className="btn btn-primary w-100 mb-3">
+              <Link to="/update-profile" className="btn btn-primary w-75 mb-3">
                 My Profile
               </Link>
-              <Link to="/upload-document" className="btn btn-primary w-100 mb-3">
+              <Link to="/upload-document" className="btn btn-primary w-75 mb-3">
                 Upload and Manage Documents
               </Link>
-              <Link to="/update-profile" className="btn btn-primary w-100 mb-3">
+              <Link to="/update-profile" className="btn btn-primary w-75 mb-3">
                 Generate QR Code
               </Link>
               <div className="w-100 text-center mt-2">
@@ -44,13 +43,12 @@ export default function Dashboard() {
                   Sign Out
                 </Button>
               </div>   
-              <div className="text-center">
+              <div className="text-center mt-5 p-0 font-weight-bold">
                 <p>"A digital all-in-one QR code Identifcation system"</p>
                 <p>DIRe support email: DigIDRecord@gmail.com</p> 
               </div>
-          </div>
-        </div>
-      </div>
-    </>
+          </Col>
+        </Row>
+    </Container>
   )
 }
