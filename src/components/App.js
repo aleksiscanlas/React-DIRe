@@ -20,7 +20,7 @@ function App() {
           <Route path="/signup" component={Signup} />
           <Route path="/login" component={Login} />
           <Route path="/forgot-password" component={ForgotPassword} />
-          <Route path="/" render={() => <div>404</div>}/>
+          <Route path="/" render={() => <div>404 Page Not Found</div>}/>
         </Switch>
     </AuthProvider>
     </Router>

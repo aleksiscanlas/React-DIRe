@@ -1,8 +1,9 @@
 import React, { useRef, useState } from "react"
-import { Form, Button, Card, Alert, Image } from "react-bootstrap"
+import { Form, Button, Container, Row, Col, Alert, Image } from "react-bootstrap"
 import { useAuth } from "../contexts/AuthContext"
 import { Link, useHistory } from "react-router-dom"
 import logo from "./images/dire-logo.png"
+import logo2 from "./images/park1.png"
 
 export default function Login() {
   const emailRef = useRef()
@@ -29,33 +30,45 @@ export default function Login() {
 
   return (
     <>
-      <Card style={{margin: "auto", height:"100%", width:"100%", maxWidth:"700px"}}>
-        <Card.Body>
-          <div className="text-center">
-            <Image src={logo} fluid/>
-          </div>
-          {error && <Alert variant="danger">{error}</Alert>}
-          <Form onSubmit={handleSubmit}>
-            <Form.Group id="email">
-              <Form.Label>Email</Form.Label>
-              <Form.Control type="email" ref={emailRef} required />
-            </Form.Group>
-            <Form.Group id="password">
-              <Form.Label>Password</Form.Label>
-              <Form.Control type="password" ref={passwordRef} required />
-            </Form.Group>
-            <Button disabled={loading} className="w-100" type="submit">
-              Log In
-            </Button>
-          </Form>
-          <div className="w-100 text-center mt-3">
-            <Link to="/forgot-password">Forgot Password?</Link>
-          </div>
-        </Card.Body>
-      </Card>
-      <div className="w-100 text-center mt-2">
-        Need an account? <Link to="/signup">Sign Up</Link>
-      </div>
+      <Container fluid="ls">
+        <Row>
+          <Col md={4} className="d-sm-none d-md-block d-none d-sm-block">
+            <Image src={logo2} style={{width:"100%", height:"100%"}} fluid/>
+          </Col>
+          <Col>
+            <div className="text-center">
+              <Image src={logo} fluid/>
+            </div>
+            <div className="w-50 mx-auto">
+              {error && <Alert variant="danger">{error}</Alert>}
+            </div>
+            <Form className="w-50 mx-auto" onSubmit={handleSubmit}>
+              <Form.Group id="email">
+                <Form.Label>Email</Form.Label>
+                <Form.Control type="email" ref={emailRef} required />
+              </Form.Group>
+              <Form.Group id="password">
+                <Form.Label>Password</Form.Label>
+                <Form.Control type="password" ref={passwordRef} required />
+              </Form.Group>
+              <Button disabled={loading} className="w-100" type="submit">
+                Log In
+              </Button>
+            </Form>
+            <div className="w-100 text-center mt-3">
+              <Link to="/forgot-password">Forgot Password?</Link>
+            </div>
+            <div className="w-100 text-center mt-2">
+              Need an account? <Link to="/signup">Sign Up</Link>
+            </div>
+            <div className="text-center mt-5 pt-5 font-weight-bold">
+              <p>"A digital all-in-one QR code Identifcation system"<br/>
+              DIRe support email: DigIDRecord@gmail.com
+              </p>
+            </div>
+          </Col>
+        </Row>
+      </Container>
     </>
   )
 }

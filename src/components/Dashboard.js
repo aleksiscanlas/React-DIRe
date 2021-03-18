@@ -22,10 +22,12 @@ export default function Dashboard() {
   }
 
   return (
-    <Container fluid className="text-center">
+    <Container fluid="ls">
         <Row> 
-        <Image src={logo2} className="d-sm-none d-md-block d-none d-sm-block"/>
-          <Col>
+          <Col md={4} className="d-none d-sm-block">
+            <Image src={logo2} className="w-100 h-100" fluid/>
+          </Col>
+          <Col className="text-center">
               <Image src={logo} fluid/>
               {error && <Alert variant="danger">{error}</Alert>}
               <p><strong>Email:</strong> {currentUser.email}</p>
@@ -43,9 +45,10 @@ export default function Dashboard() {
                   Sign Out
                 </Button>
               </div>   
-              <div className="text-center mt-5 p-0 font-weight-bold">
-                <p>"A digital all-in-one QR code Identifcation system"</p>
-                <p>DIRe support email: DigIDRecord@gmail.com</p> 
+              <div className="text-center mt-5 font-weight-bold">
+                <p>"A digital all-in-one QR code Identifcation system"<br/>
+                DIRe support email: DigIDRecord@gmail.com
+                </p>
               </div>
           </Col>
         </Row>
