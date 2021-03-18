@@ -45,7 +45,7 @@ export default function Dashboard() {
                   Sign Out
                 </Button>
               </div>   
-              <div className="text-center mt-5 font-weight-bold">
+              <div className="text-center mt-5 pt-5 font-weight-bold">
                 <p>"A digital all-in-one QR code Identifcation system"<br/>
                 DIRe support email: DigIDRecord@gmail.com
                 </p>
