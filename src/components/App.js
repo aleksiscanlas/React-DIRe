@@ -11,20 +11,22 @@ import UploadDocument from "./UploadDocument.js"
 
 function App() {
   return (
-    <Router>
-      <AuthProvider>
-        <Switch>
+    <>
+      <Router>
+        <AuthProvider>
+          <Switch>
           <PrivateRoute exact path="/" component={Dashboard} />
           <PrivateRoute path="/update-profile" component={UpdateProfile} />
           <PrivateRoute path="/upload-document" component={UploadDocument} />
           <Route path="/signup" component={Signup} />
           <Route path="/login" component={Login} />
           <Route path="/forgot-password" component={ForgotPassword} />
-          <Route path="/" render={() => <div>404 Page Not Found</div>}/>
+          <Route path="/" render={() => <div className="text-center">404 Page Not Found</div>}/>
         </Switch>
-    </AuthProvider>
-    </Router>
-  )
+        </AuthProvider>
+      </Router>
+    </>
+    )
 }
 
 export default App
