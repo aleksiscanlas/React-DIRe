@@ -7,9 +7,13 @@ import logo2 from "./images/park1.png"
 
 export default function Signup() {
   const emailRef = useRef()
+  const suffix = useRef()
+  const first = useRef()
+  const middle = useRef()
+  const last = useRef()
   const passwordRef = useRef()
   const passwordConfirmRef = useRef()
-  const { signup } = useAuth()
+  const { signup, signupFirestore } = useAuth()
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
   const history = useHistory()
@@ -19,7 +23,7 @@ export default function Signup() {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  const dataLabel = <p>I Agree to <Link onClick={handleShow}>Data Privacy Consent</Link></p>
+  const dataLabel = <p>I Agree to <span className="text-info" onClick={handleShow}>Data Privacy Consent</span></p>
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -32,6 +36,7 @@ export default function Signup() {
       setError("")
       setLoading(true)
       await signup(emailRef.current.value, passwordRef.current.value)
+      await signupFirestore(suffix.current.value, first.current.value, middle.current.value, last.current.value)
       history.push("/")
     } catch {
       setError("Failed to create an account")
@@ -39,6 +44,7 @@ export default function Signup() {
 
     setLoading(false)
   }
+
 
   return (
     <Row>
@@ -75,19 +81,19 @@ export default function Signup() {
         <Form className="w-50 mx-auto" onSubmit={handleSubmit}>
           <Form.Group id="text">
             <Form.Label>Suffix</Form.Label>
-            <Form.Control type="text"/>
+            <Form.Control type="text" ref={suffix}/>
           </Form.Group>
           <Form.Group id="text">
             <Form.Label>First name</Form.Label>
-            <Form.Control type="text" required/>
+            <Form.Control type="text" ref={first} required/>
           </Form.Group>
           <Form.Group id="text">
             <Form.Label>Middle name</Form.Label>
-            <Form.Control type="text" required/>
+            <Form.Control type="text" ref={middle} required/>
           </Form.Group>
           <Form.Group id="text">
             <Form.Label>Last name</Form.Label>
-            <Form.Control type="text" required/>
+            <Form.Control type="text" ref={last} required/>
           </Form.Group>
           <Form.Group id="email">
             <Form.Label>Email</Form.Label>
