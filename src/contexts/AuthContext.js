@@ -10,15 +10,23 @@ export function useAuth() {
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState()
   const [loading, setLoading] = useState(true)
+  const usersDB = db.collection("users")
 
   function signup(email, password) {
     return auth.createUserWithEmailAndPassword(email, password)
   }
 
   function signupFirestore(suffix, first, middle, last) {
-    return db.collection("users").doc(auth.currentUser.uid).set({Suffix:suffix, First:first, Middle:middle, Last:last})
+    return usersDB.doc(auth.currentUser.uid).set({Suffix:suffix, First:first, Middle:middle, Last:last})
   }
 
+  // // function isVerified() {
+  // //   return auth.currentUser.emailVerified()
+  // // }
+
+  // function sendEmail() {
+  //   return auth.currentUser.sendEmailVerification()
+  // }
 
   function login(email, password) {
     return auth.signInWithEmailAndPassword(email, password)
@@ -40,6 +48,22 @@ export function AuthProvider({ children }) {
     return currentUser.updatePassword(password)
   }
 
+  function updateSuffix(suffix) {
+    return usersDB.doc(auth.currentUser.uid).set({Suffix:suffix}, {merge: true})
+  }
+
+  function updateFirst(first) {
+    return usersDB.doc(auth.currentUser.uid).set({First:first}, {merge: true})
+  }
+
+  function updateMiddle(middle) {
+    return usersDB.doc(auth.currentUser.uid).set({Middle:middle}, {merge: true})
+  }
+
+  function updateLast(last) {
+    return usersDB.doc(auth.currentUser.uid).set({Last:last}, {merge: true})
+  }
+
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user => {
       setCurrentUser(user)
@@ -55,9 +79,15 @@ export function AuthProvider({ children }) {
     signup,
     signupFirestore,
     logout,
+    // isVerified,
+    // sendEmail,
     resetPassword,
     updateEmail,
-    updatePassword
+    updatePassword,
+    updateSuffix,
+    updateFirst,
+    updateMiddle,
+    updateLast
   }
 
   return (

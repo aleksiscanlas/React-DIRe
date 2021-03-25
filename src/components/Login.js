@@ -13,6 +13,8 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
   const history = useHistory()
 
+  // const resendEmail = <span className="text-info" onClick={sendEmail}>Resend Email Verification</span>
+
   async function handleSubmit(e) {
     e.preventDefault()
 
