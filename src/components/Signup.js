@@ -13,7 +13,7 @@ export default function Signup() {
   const last = useRef()
   const passwordRef = useRef()
   const passwordConfirmRef = useRef()
-  const { signup, signupFirestore } = useAuth()
+  const { signup, signupFirestore, sendEmail } = useAuth()
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
   const history = useHistory()
@@ -36,7 +36,8 @@ export default function Signup() {
       setError("")
       setLoading(true)
       await signup(emailRef.current.value, passwordRef.current.value)
-      await signupFirestore(suffix.current.value, first.current.value, middle.current.value, last.current.value)
+      signupFirestore(suffix.current.value, first.current.value, middle.current.value, last.current.value)
+      sendEmail()
       history.push("/")
     } catch {
       setError("Failed to create an account")

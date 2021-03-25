@@ -20,13 +20,13 @@ export function AuthProvider({ children }) {
     return usersDB.doc(auth.currentUser.uid).set({Suffix:suffix, First:first, Middle:middle, Last:last})
   }
 
-  // // function isVerified() {
-  // //   return auth.currentUser.emailVerified()
-  // // }
+  function sendEmail() {
+    return auth.currentUser.sendEmailVerification()
+  }
 
-  // function sendEmail() {
-  //   return auth.currentUser.sendEmailVerification()
-  // }
+  function isVerified() {
+    return auth.currentUser.emailVerified()
+  }
 
   function login(email, password) {
     return auth.signInWithEmailAndPassword(email, password)
@@ -79,8 +79,8 @@ export function AuthProvider({ children }) {
     signup,
     signupFirestore,
     logout,
-    // isVerified,
-    // sendEmail,
+    sendEmail,
+    isVerified,
     resetPassword,
     updateEmail,
     updatePassword,
