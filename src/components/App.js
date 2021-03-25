@@ -7,7 +7,8 @@ import Login from "./Login"
 import PrivateRoute from "./PrivateRoute"
 import ForgotPassword from "./ForgotPassword"
 import UpdateProfile from "./UpdateProfile"
-import UploadDocument from "./UploadDocument.js"
+import Documents from "./Documents"
+import GenerateQR from "./GenerateQR"
 
 function App() {
   return (
@@ -17,7 +18,8 @@ function App() {
           <Switch>
           <PrivateRoute exact path="/" component={Dashboard} />
           <PrivateRoute path="/update-profile" component={UpdateProfile} />
-          <PrivateRoute path="/upload-document" component={UploadDocument} />
+          <PrivateRoute path="/generate-qr" component={GenerateQR} />
+          <PrivateRoute path="/Documents" component={Documents} />
           <Route path="/signup" component={Signup} />
           <Route path="/login" component={Login} />
           <Route path="/forgot-password" component={ForgotPassword} />

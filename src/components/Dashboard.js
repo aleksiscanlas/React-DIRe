@@ -35,10 +35,10 @@ export default function Dashboard() {
           <Link to="/update-profile" className="btn btn-primary w-75 mb-3">
             My Profile
           </Link>
-          <Link to="/upload-document" className="btn btn-primary w-75 mb-3">
+          <Link to="/Documents" className="btn btn-primary w-75 mb-3">
             Upload and Manage Documents
           </Link>
-          <Link to="/update-profile" className="btn btn-primary w-75 mb-3">
+          <Link to="/generate-qr" className="btn btn-primary w-75 mb-3">
             Generate QR Code
           </Link>
           <div className="w-100 text-center mt-2">
