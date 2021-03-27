@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react"
-import { auth, db } from "../firebase"
+import { auth, db, storage } from "../firebase"
 
 const AuthContext = React.createContext()
 
@@ -64,6 +64,15 @@ export function AuthProvider({ children }) {
     return usersDB.doc(auth.currentUser.uid).set({Last:last}, {merge: true})
   }
 
+  function addFile(file, expiration) {
+    const date = new Date()
+    return usersDB.doc(auth.currentUser.uid).set({files:{[file]:{FileUpload:date, FileExpiry:expiration}}},{merge: true})
+  }
+
+  function uploadDocument(document) {
+    return storage.child(auth.currentUser.uid).child(document.name).put(document)
+  }
+
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user => {
       setCurrentUser(user)
@@ -87,7 +96,9 @@ export function AuthProvider({ children }) {
     updateSuffix,
     updateFirst,
     updateMiddle,
-    updateLast
+    updateLast,
+    uploadDocument,
+    addFile,
   }
 
   return (
