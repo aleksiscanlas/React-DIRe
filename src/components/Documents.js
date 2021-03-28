@@ -11,7 +11,8 @@ export default function Documents() {
   const [show, setShow] = useState(false)
   const [error, setError] = useState()
   const [expires, setExpires] = useState(true)
-  const { uploadDocument, addFile } = useAuth()
+  const [loading, setLoading] = useState(false)
+  const { storageRef, addFile } = useAuth()
   const handleShow = () => setShow(true);
 
   const handleClose = () => {
@@ -20,19 +21,23 @@ export default function Documents() {
     setError("")
   }
 
+
   async function handleSubmit(e) {
     e.preventDefault()
     try{
       setError("")
-      await uploadDocument(fileRef.current.files[0])
-      addFile(fileRef.current.value.split("\\").pop(), dateRef.current.value)
+      setLoading(true)
+      await storageRef().put(fileRef.current.files[0])
+      const ref = await storageRef().getDownloadURL()
+      addFile(fileRef.current.value.split("\\").pop(), ref, dateRef.current.value)
+      setLoading(false)
       handleClose()
     } catch {
       setError("Document Upload Failed")
     }
+  } 
 
-  }
-
+  
   return (
     <Row>
         {<Modal
@@ -84,8 +89,8 @@ export default function Documents() {
               </Row>
               </Form.Group>
               <Form.Control type="date" name='date_of_birth' disabled={expires} ref={dateRef} className="w-75 mb-3"/>
-              <Button type="submit" className="mr-3">Upload</Button>
-              <Button variant="secondary" onClick={handleClose}>Cancel</Button>
+              <Button type="submit" disabled={loading} className="mr-3">Upload</Button>
+              <Button variant="secondary" disabled={loading} onClick={handleClose}>Cancel</Button>
           </Form>
         </Modal.Body>
       </Modal>}
@@ -96,6 +101,7 @@ export default function Documents() {
         <Image src={logo} fluid/>
         <Button className="w-50" onClick={handleShow}>Upload Document</Button>
         <div className="w-100 text-center mt-2">
+        {/* <Button onClick={test}></Button> */}
         <Link to="/">Back</Link>
         </div>
         <div className="text-center mt-5 pt-5 font-weight-bold">

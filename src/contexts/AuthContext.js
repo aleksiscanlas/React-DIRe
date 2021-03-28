@@ -64,13 +64,17 @@ export function AuthProvider({ children }) {
     return usersDB.doc(auth.currentUser.uid).set({Last:last}, {merge: true})
   }
 
-  function addFile(file, expiration) {
+  function addFile(file, fileURL, expiration) {
     const date = new Date()
-    return usersDB.doc(auth.currentUser.uid).set({files:{[file]:{FileUpload:date, FileExpiry:expiration}}},{merge: true})
+    return usersDB.doc(auth.currentUser.uid).collection("files").doc(file).set({FileName:file, FileUpload:date, FileExpiry:expiration, FileModified:date, URL:fileURL},{merge: true})
   }
 
-  function uploadDocument(document) {
-    return storage.child(auth.currentUser.uid).child(document.name).put(document)
+  function storageRef() {
+    return storage.ref().child(auth.currentUser.uid)
+  }
+
+  function retrieveFiles() {
+    return usersDB.doc(auth.currentUser.uid).collection("files").get()
   }
 
   useEffect(() => {
@@ -97,8 +101,9 @@ export function AuthProvider({ children }) {
     updateFirst,
     updateMiddle,
     updateLast,
-    uploadDocument,
+    storageRef,
     addFile,
+    retrieveFiles
   }
 
   return (
