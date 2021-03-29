@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react"
+import React, { useState, useRef, useEffect } from "react"
 import { Row, Col, Image, Button, Modal, Form, Alert } from "react-bootstrap"
 import { Link } from "react-router-dom"
 import { useAuth } from "../contexts/AuthContext"
@@ -12,8 +12,9 @@ export default function Documents() {
   const [error, setError] = useState()
   const [expires, setExpires] = useState(true)
   const [loading, setLoading] = useState(false)
-  const { storageRef, addFile } = useAuth()
-  const handleShow = () => setShow(true);
+  const [files, setFiles] = useState([])
+  const { storageRef, addFile, retrieveFiles } = useAuth()
+  const handleShow = () => setShow(true)
 
   const handleClose = () => {
     setShow(false)
@@ -35,8 +36,22 @@ export default function Documents() {
     } catch {
       setError("Document Upload Failed")
     }
-  } 
+  }
 
+  useEffect(() => {
+    const getFiles = async() => {
+      const snapshot = await retrieveFiles()
+      const arrayFiles = []
+      snapshot.docs.map(async doc => {
+        arrayFiles.push({name: doc.data().FileName, url: doc.data().URL, expiry: doc.data().FileExpiry})
+      })
+      setFiles(arrayFiles)
+      console.log(files)
+    }
+    getFiles()
+    //fix this dependency because the document re renders whenever handleclose is called
+    //consider adding a refresh button to re render this page or nah??
+  }, [handleClose])
   
   return (
     <Row>
@@ -100,11 +115,31 @@ export default function Documents() {
       <Col className="text-center">
         <Image src={logo} fluid/>
         <Button className="w-50" onClick={handleShow}>Upload Document</Button>
+        <div className="mx-auto mt-2" style={{overflow:"scroll", maxWidth:"750px", maxHeight:"250px"}}>
+          <table className="table">
+            <thead>
+              <th>Document</th>
+              <th>File Expiry</th>
+            </thead>
+            <tbody>
+              {
+                  files.map(file => {
+                      return (
+                        <tr>
+                          <td><a href={file.url}>{file.name}</a></td>
+                          <td>{file.expiry}</td>
+                        </tr>
+                      )
+                  })
+              }  
+            </tbody> 
+          </table>
+        </div>
+
         <div className="w-100 text-center mt-2">
-        {/* <Button onClick={test}></Button> */}
         <Link to="/">Back</Link>
         </div>
-        <div className="text-center mt-5 pt-5 font-weight-bold">
+        <div className="text-center mt-3 pt-3 font-weight-bold">
           <p>"A digital all-in-one QR code Identifcation system"<br/>
           DIRe support email: DigIDRecord@gmail.com
           </p>
