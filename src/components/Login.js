@@ -49,7 +49,7 @@ export default function Login() {
             <Form.Control type="email" ref={emailRef} required />
           </Form.Group>
           <Form.Group id="password">
-            <Form.Label>Passwasdssssa</Form.Label>
+            <Form.Label>Passworrd</Form.Label>
             <Form.Control type="password" ref={passwordRef} required />
           </Form.Group>
           <Button disabled={loading} className="w-100" type="submit">
