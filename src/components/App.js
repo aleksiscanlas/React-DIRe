@@ -16,15 +16,15 @@ function App() {
       <Router>
         <AuthProvider>
           <Switch>
-          <PrivateRoute exact path="/" component={Dashboard} />
-          <PrivateRoute path="/update-profile" component={UpdateProfile} />
-          <PrivateRoute path="/generate-qr" component={GenerateQR} />
-          <PrivateRoute path="/Documents" component={Documents} />
-          <Route path="/signup" component={Signup} />
-          <Route path="/login" component={Login} />
-          <Route path="/forgot-password" component={ForgotPassword} />
-          <Route path="/" render={() => <div className="text-center">404 Page Not Found</div>}/>
-        </Switch>
+            <PrivateRoute exact path="/" component={Dashboard} />
+            <PrivateRoute path="/update-profile" component={UpdateProfile} />
+            <PrivateRoute path="/generate-qr" component={GenerateQR} />
+            <PrivateRoute path="/Documents" component={Documents} />
+            <Route path="/signup" component={Signup} />
+            <Route path="/login" component={Login} />
+            <Route path="/forgot-password" component={ForgotPassword} />
+            <Route path="/" render={() => <div className="text-center">404 Page Not Found</div>}/>
+          </Switch>
         </AuthProvider>
       </Router>
     </>
