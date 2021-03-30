@@ -16,8 +16,8 @@ export function AuthProvider({ children }) {
     return auth.createUserWithEmailAndPassword(email, password)
   }
 
-  function signupFirestore(suffix, first, middle, last) {
-    return usersDB.doc(auth.currentUser.uid).set({Suffix:suffix, First:first, Middle:middle, Last:last})
+  function signupFirestore(email, suffix, first, middle, last) {
+    return usersDB.doc(auth.currentUser.uid).set({Email:email, Suffix:suffix, First:first, Middle:middle, Last:last})
   }
 
   function sendEmail() {
@@ -64,13 +64,15 @@ export function AuthProvider({ children }) {
     return usersDB.doc(auth.currentUser.uid).set({Last:last}, {merge: true})
   }
 
-  function addFile(file, fileURL, expiration) {
+  async function addFile(file, expiration) {
     const date = new Date()
-    return usersDB.doc(auth.currentUser.uid).collection("files").doc(file).set({FileName:file, FileUpload:date, FileExpiry:expiration, FileModified:date, URL:fileURL},{merge: true})
+    const dlURL = await storage.ref().child(auth.currentUser.uid).child(file).getDownloadURL()
+    return usersDB.doc(auth.currentUser.uid).collection("files").doc(file).set({FileName:file, FileUpload:date, FileExpiry:expiration, FileModified:date, URL:dlURL},{merge: true})
   }
 
-  function storageRef() {
-    return storage.ref().child(auth.currentUser.uid)
+  function storageRef(file, actual) {
+    const path = auth.currentUser.uid + '/' + file
+    return storage.ref().child(path).put(actual)
   }
 
   function retrieveFiles() {

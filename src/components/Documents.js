@@ -22,36 +22,36 @@ export default function Documents() {
     setError("")
   }
 
-
   async function handleSubmit(e) {
     e.preventDefault()
+    const fileName = fileRef.current.files[0].name;
     try{
       setError("")
       setLoading(true)
-      await storageRef().put(fileRef.current.files[0])
-      const ref = await storageRef().getDownloadURL()
-      addFile(fileRef.current.value.split("\\").pop(), ref, dateRef.current.value)
+      await storageRef(fileName, fileRef.current.files[0])
+      addFile(fileName, dateRef.current.value)
       setLoading(false)
+      getFiles()
       handleClose()
     } catch {
       setError("Document Upload Failed")
     }
   }
 
+  const getFiles = async() => {
+    const snapshot = await retrieveFiles()
+    const arrayFiles = []
+    snapshot.docs.map(async doc => {
+      arrayFiles.push({name: doc.data().FileName, url: doc.data().URL, expiry: doc.data().FileExpiry})
+    })
+    console.log(arrayFiles)
+    setFiles(arrayFiles)
+  }
+
   useEffect(() => {
-    const getFiles = async() => {
-      const snapshot = await retrieveFiles()
-      const arrayFiles = []
-      snapshot.docs.map(async doc => {
-        arrayFiles.push({name: doc.data().FileName, url: doc.data().URL, expiry: doc.data().FileExpiry})
-      })
-      setFiles(arrayFiles)
-      console.log(files)
-    }
     getFiles()
-    //fix this dependency because the document re renders whenever handleclose is called
-    //consider adding a refresh button to re render this page or nah??
-  }, [handleClose])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   
   return (
     <Row>
@@ -118,14 +118,16 @@ export default function Documents() {
         <div className="mx-auto mt-2" style={{overflow:"scroll", maxWidth:"750px", maxHeight:"250px"}}>
           <table className="table">
             <thead>
-              <th>Document</th>
-              <th>File Expiry</th>
+              <tr>
+                <th>Document</th>
+                <th>File Expiry</th>
+              </tr>
             </thead>
             <tbody>
               {
                   files.map(file => {
                       return (
-                        <tr>
+                        <tr key={file.name}>
                           <td><a href={file.url}>{file.name}</a></td>
                           <td>{file.expiry}</td>
                         </tr>

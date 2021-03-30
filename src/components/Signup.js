@@ -36,7 +36,7 @@ export default function Signup() {
       setError("")
       setLoading(true)
       await signup(emailRef.current.value, passwordRef.current.value)
-      signupFirestore(suffix.current.value, first.current.value, middle.current.value, last.current.value)
+      signupFirestore(emailRef.current.value, suffix.current.value, first.current.value, middle.current.value, last.current.value)
       sendEmail()
       history.push("/")
     } catch {
