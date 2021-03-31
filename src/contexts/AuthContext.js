@@ -16,8 +16,8 @@ export function AuthProvider({ children }) {
     return auth.createUserWithEmailAndPassword(email, password)
   }
 
-  function signupFirestore(email, suffix, first, middle, last) {
-    return usersDB.doc(auth.currentUser.uid).set({Email:email, Suffix:suffix, First:first, Middle:middle, Last:last})
+  function signupFirestore(suffix, first, middle, last, email, address, contact, gender, civil) {
+    return usersDB.doc(auth.currentUser.uid).set({ Suffix: suffix, First: first, Middle: middle, Last: last, Email: email, Address: address, Contact: contact, Gender: gender, Civil: civil })
   }
 
   function sendEmail() {
