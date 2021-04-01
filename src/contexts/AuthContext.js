@@ -25,7 +25,7 @@ export function AuthProvider({ children }) {
   }
 
   function isVerified() {
-    return auth.currentUser.emailVerified()
+    return currentUser.emailVerified
   }
 
   function login(email, password) {
@@ -79,12 +79,15 @@ export function AuthProvider({ children }) {
     return usersDB.doc(auth.currentUser.uid).collection("files").get()
   }
 
+  function searchFiles(file) {
+    return usersDB.doc(auth.currentUser.uid).collection("files").where("FileName", "==", file).get()
+  }
+
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user => {
       setCurrentUser(user)
       setLoading(false)
     })
-
     return unsubscribe
   }, [])
 
@@ -105,7 +108,8 @@ export function AuthProvider({ children }) {
     updateLast,
     storageRef,
     addFile,
-    retrieveFiles
+    retrieveFiles,
+    searchFiles
   }
 
   return (

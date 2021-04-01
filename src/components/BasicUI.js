@@ -1,5 +1,5 @@
 import React from 'react'
-import { Image, Row, Col, Container } from "react-bootstrap"
+import { Image, Row, Col } from "react-bootstrap"
 import logo from "./images/dire-logo.png"
 import logo2 from "./images/park1.png"
 
@@ -7,9 +7,9 @@ export default function BasicUI(props) {
     return (
         <Row>
             <Col md={4} className="d-sm-none d-md-block d-none d-sm-block">
-                <Image src={logo2} fluid/>
+                <Image src={logo2} className="h-100" fluid/>
             </Col>
-            <Col>
+            <Col className={props.styling}>
             <div className="text-center">
                 <Image src={logo} fluid/>
             </div>
@@ -20,6 +20,6 @@ export default function BasicUI(props) {
                 </p>
             </div>
             </Col>           
-        </Row>
+        </Row>            
     )
 }

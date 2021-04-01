@@ -67,7 +67,7 @@ export default function Signup() {
         signupFirestore(data.suffix, data.first, data.middle, data.last, data.email, data.address,
                       data.contact, data.gender, data.civil)
         sendEmail()
-        history.push("/")
+        history.push("/login")
       } catch {
         setError("Failed to create an account")
       }
@@ -80,7 +80,6 @@ export default function Signup() {
     setData({...data,
       [name]: value
     })
-    console.log(data)
   }
 
   const _next = () => {

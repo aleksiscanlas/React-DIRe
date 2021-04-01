@@ -13,8 +13,6 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
   const history = useHistory()
 
-  // const resendEmail = <span className="text-info" onClick={sendEmail}>Resend Email Verification</span>
-
   async function handleSubmit(e) {
     e.preventDefault()
 
@@ -22,12 +20,10 @@ export default function Login() {
       setError("")
       setLoading(true)
       await login(emailRef.current.value, passwordRef.current.value)
-      // isVerified()
       history.push("/")
     } catch {
       setError("Failed to log in")
     }
-
     setLoading(false)
   }
 
@@ -49,7 +45,7 @@ export default function Login() {
             <Form.Control type="email" ref={emailRef} required />
           </Form.Group>
           <Form.Group id="password">
-            <Form.Label>Passwrrsord</Form.Label>
+            <Form.Label>Password</Form.Label>
             <Form.Control type="password" ref={passwordRef} required />
           </Form.Group>
           <Button disabled={loading} className="w-100" type="submit">

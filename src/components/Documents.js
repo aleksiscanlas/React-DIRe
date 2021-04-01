@@ -1,19 +1,31 @@
 import React, { useState, useRef, useEffect } from "react"
-import { Row, Col, Image, Button, Modal, Form, Alert } from "react-bootstrap"
+import { Row, Button, Modal, Form, Alert } from "react-bootstrap"
 import { Link } from "react-router-dom"
 import { useAuth } from "../contexts/AuthContext"
-import logo from "./images/dire-logo.png"
-import logo2 from "./images/park1.png"
+import BasicUI from './BasicUI'
+
+
+function SearchBar(props) {
+  return (
+    <div className="input-group mb-2" style={{maxWidth:"400px"}}>
+      <input type="text" className="form-control" placeholder="Search..." aria-label="Search..." aria-describedby="basic-addon2" onChange={props.onChange} value={props.value}/>
+      <div className="inpur-group-prepend">
+        <button className="btn btn-outline-secondary fa fa-search" onClick={props.onClick}></button>
+      </div>
+    </div>
+  );
+}
 
 export default function Documents() {
   const fileRef = useRef()
   const dateRef = useRef()
+  const [search, setSearch] = useState()
   const [show, setShow] = useState(false)
   const [error, setError] = useState()
   const [expires, setExpires] = useState(true)
   const [loading, setLoading] = useState(false)
   const [files, setFiles] = useState([])
-  const { storageRef, addFile, retrieveFiles } = useAuth()
+  const { storageRef, addFile, retrieveFiles, searchFiles } = useAuth()
   const handleShow = () => setShow(true)
 
   const handleClose = () => {
@@ -39,23 +51,28 @@ export default function Documents() {
   }
 
   const getFiles = async() => {
-    const snapshot = await retrieveFiles()
-    const arrayFiles = []
-    snapshot.docs.map(async doc => {
-      arrayFiles.push({name: doc.data().FileName, url: doc.data().URL, expiry: doc.data().FileExpiry})
+    const snapshot = search ? await searchFiles(search): await retrieveFiles()
+    let arr = []
+    console.log(snapshot)
+    snapshot.docs.map(doc => {
+      return arr.push({name: doc.data().FileName, url: doc.data().URL, expiry: doc.data().FileExpiry})
     })
-    console.log(arrayFiles)
-    setFiles(arrayFiles)
+    setFiles(arr)
+    setSearch('')
+  }
+
+  const handleSearch = async(e) => {
+    setSearch(e.target.value)
   }
 
   useEffect(() => {
     getFiles()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  })
   
   return (
-    <Row>
-        {<Modal
+    <BasicUI>
+    {<Modal
           show={show}
           onHide={handleClose}
           backdrop="static"
@@ -109,44 +126,34 @@ export default function Documents() {
           </Form>
         </Modal.Body>
       </Modal>}
-      <Col md={4} className="d-sm-none d-md-block d-none d-sm-block">
-        <Image src={logo2} className="h-100" fluid/>
-      </Col>
-      <Col className="text-center">
-        <Image src={logo} fluid/>
-        <Button className="w-50" onClick={handleShow}>Upload Document</Button>
-        <div className="mx-auto mt-2" style={{overflow:"scroll", maxWidth:"750px", maxHeight:"250px"}}>
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Document</th>
-                <th>File Expiry</th>
-              </tr>
-            </thead>
-            <tbody>
-              {
-                  files.map(file => {
-                      return (
-                        <tr key={file.name}>
-                          <td><a href={file.url}>{file.name}</a></td>
-                          <td>{file.expiry}</td>
-                        </tr>
-                      )
-                  })
-              }  
-            </tbody> 
-          </table>
-        </div>
+      <SearchBar onClick={getFiles} onChange={handleSearch} value={search}/>
+      <div className="mx-auto mt-2 pt-2" style={{overflow:"scroll", maxWidth:"800px", maxHeight:"250px"}}>
+        <table className="table overflow-scroll" >
+          <thead>
+            <tr>
+              <th>Document</th>
+              <th>File Expiry</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+                files.map(file => {
+                    return (
+                      <tr key={file.name}>
+                        <td><a href={file.url}>{file.name}</a></td>
+                        <td>{file.expiry}</td>
+                      </tr>
+                    )
+                })
+            }  
+          </tbody> 
+        </table>
+      </div>
 
-        <div className="w-100 text-center mt-2">
-        <Link to="/">Back</Link>
-        </div>
-        <div className="text-center mt-3 pt-3 font-weight-bold">
-          <p>"A digital all-in-one QR code Identifcation system"<br/>
-          DIRe support email: DigIDRecord@gmail.com
-          </p>
-        </div>
-      </Col>
-    </Row>
+      <div className="w-100 text-center mt-2">
+      <Button className="w-50 m-2" onClick={handleShow}>Upload Document</Button>
+      <Link to="/"><br/>Back</Link>
+      </div>
+    </BasicUI>
   )
 }
