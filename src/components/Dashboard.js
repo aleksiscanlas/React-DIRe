@@ -24,11 +24,13 @@ export default function Dashboard() {
 
   useEffect(()=>{
     let isMounted = true;
-    const check = async() => {
-      const res = await currentUser.emailVerified
-      if(!res) setWarning(resendEmail)
-    }
-    check()
+    if(isMounted){
+      const check = async() => {
+        const res = await currentUser.emailVerified
+        if(!res) setWarning(resendEmail)
+      }
+      check()
+    } 
     return ()=> isMounted=false;
   })
 

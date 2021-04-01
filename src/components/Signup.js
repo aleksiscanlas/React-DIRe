@@ -107,11 +107,11 @@ export default function Signup() {
               <Form.Label>First name</Form.Label>
               <Form.Control type="text" name="first" onChange={handleChange} value={data.first} required/>
             </Form.Group>
-            <Form.Group id="text">
+            <Form.Group id="middle">
               <Form.Label>Middle name</Form.Label>
               <Form.Control type="text" name="middle" onChange={handleChange} value={data.middle} required/>
             </Form.Group>
-            <Form.Group id="text">
+            <Form.Group id="last">
               <Form.Label>Last name</Form.Label>
               <Form.Control type="text" name="last" onChange={handleChange} value={data.last} required/>
             </Form.Group>

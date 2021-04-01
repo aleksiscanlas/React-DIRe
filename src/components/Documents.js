@@ -53,7 +53,6 @@ export default function Documents() {
   const getFiles = async() => {
     const snapshot = search ? await searchFiles(search): await retrieveFiles()
     let arr = []
-    console.log(snapshot)
     snapshot.docs.map(doc => {
       return arr.push({name: doc.data().FileName, url: doc.data().URL, expiry: doc.data().FileExpiry})
     })
@@ -68,7 +67,7 @@ export default function Documents() {
   useEffect(() => {
     getFiles()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  })
+  }, [])
   
   return (
     <BasicUI>
