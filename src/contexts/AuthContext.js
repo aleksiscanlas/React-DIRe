@@ -8,32 +8,33 @@ export function useAuth() {
 }
 
 export function AuthProvider({ children }) {
-  const [currentUser, setCurrentUser] = useState()
-  const [loading, setLoading] = useState(true)
-  const usersDB = db.collection("users")
+  const [currentUser, setCurrentUser] = useState();
+  const [loading, setLoading] = useState(true);
+  const usersDB = db.collection("users");
+  const storageDB = storage.ref();
 
   function signup(email, password) {
-    return auth.createUserWithEmailAndPassword(email, password)
+    return auth.createUserWithEmailAndPassword(email, password);
   }
 
   function signupFirestore(suffix, first, middle, last, email, address, contact, gender, civil) {
-    return usersDB.doc(auth.currentUser.uid).set({ Suffix: suffix, First: first, Middle: middle, Last: last, Email: email, Address: address, Contact: contact, Gender: gender, Civil: civil })
+    return usersDB.doc(auth.currentUser.uid).set({ Suffix: suffix, First: first, Middle: middle, Last: last, Email: email, Address: address, Contact: contact, Gender: gender, Civil: civil });
   }
 
   function sendEmail() {
-    return auth.currentUser.sendEmailVerification()
+    return auth.currentUser.sendEmailVerification();
   }
 
   function isVerified() {
-    return currentUser.emailVerified
+    return currentUser.emailVerified;
   }
 
   function login(email, password) {
-    return auth.signInWithEmailAndPassword(email, password)
+    return auth.signInWithEmailAndPassword(email, password);
   }
 
   function logout() {
-    return auth.signOut()
+    return auth.signOut();
   }
 
   function resetPassword(email) {
@@ -66,13 +67,13 @@ export function AuthProvider({ children }) {
 
   async function addFile(file, expiration) {
     const date = new Date()
-    const dlURL = await storage.ref().child(auth.currentUser.uid).child(file).getDownloadURL()
+    const dlURL = await storageDB.child(auth.currentUser.uid).child(file).getDownloadURL()
     return usersDB.doc(auth.currentUser.uid).collection("files").doc(file).set({FileName:file, FileUpload:date, FileExpiry:expiration, FileModified:date, URL:dlURL},{merge: true})
   }
 
   function storageRef(file, actual) {
     const path = auth.currentUser.uid + '/' + file
-    return storage.ref().child(path).put(actual)
+    return storageDB.child(path).put(actual)
   }
 
   function retrieveFiles() {
@@ -81,6 +82,15 @@ export function AuthProvider({ children }) {
 
   function searchFiles(file) {
     return usersDB.doc(auth.currentUser.uid).collection("files").where("FileName", "==", file).get()
+  }
+
+  async function deleteFiles(files) {
+    files.forEach(file =>{
+      const storagePath = auth.currentUser.uid + '/' + file.name;
+      storageDB.child(storagePath).delete();
+      usersDB.doc(auth.currentUser.uid).collection("files").doc(file.name).delete();
+    })
+    return "file deleted"
   }
 
   useEffect(() => {
@@ -109,7 +119,8 @@ export function AuthProvider({ children }) {
     storageRef,
     addFile,
     retrieveFiles,
-    searchFiles
+    searchFiles,
+    deleteFiles
   }
 
   return (

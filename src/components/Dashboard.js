@@ -3,6 +3,25 @@ import { Button, Alert } from "react-bootstrap"
 import { useAuth } from "../contexts/AuthContext"
 import { Link, useHistory } from "react-router-dom"
 import BasicUI from './BasicUI'
+import closedFolder from './images/closedFolder.png'
+import openedFolder from './images/openedFolder.png'
+import qrCode from './images/qr-code.png'
+import qrCodeScan from './images/qr-code-scan.png'
+import man2 from './images/man.png'
+import man from './images/man (1).png'
+import woman2 from './images/woman.png'
+import woman from './images/woman (1).png'
+
+const DashboardIcons = (props) => {
+  return (
+    <img src={props.out} 
+        onMouseOver={(e) => e.currentTarget.src = props.enter} 
+        onMouseOut={(e) => e.currentTarget.src = props.out} 
+        alt={props.alt}
+        style={{maxWidth:[props.width], maxHeight:[props.height]}}
+    />
+  )
+}
 
 export default function Dashboard() {
   const [error, setError] = useState("")
@@ -22,6 +41,7 @@ export default function Dashboard() {
     }
   }
 
+
   useEffect(()=>{
     let isMounted = true;
     if(isMounted){
@@ -40,16 +60,22 @@ export default function Dashboard() {
         {warning && <Alert variant="warning">{warning}</Alert>}
         {error && <Alert variant="danger">{error}</Alert>}
       </div>
-        <p><strong>Email:</strong> {currentUser.uid}</p>
-        <Link to="/update-profile" className="btn btn-primary w-75 mb-3">
-          My Profile
-        </Link>
-        <Link to="/Documents" className="btn btn-primary w-75 mb-3">
-          Upload and Manage Documents
-        </Link>
-        <Link to="/generate-qr" className="btn btn-primary w-75 mb-3">
-          Generate QR Code
-        </Link>
+        {/* <p><strong>Email:</strong> {currentUser.uid}</p> */}
+        <div className="container">
+          <Link to="/update-profile" className="btn mb-3" style={{width:"30%"}}>
+            <DashboardIcons enter={man2} out={man} alt="man-icon" width="120px" height="150px"/>
+            <DashboardIcons enter={woman2} out={woman} alt="woman-icon" width="120px" height="110px"/>
+            <label>Update Profile</label>
+          </Link>
+          <Link to="/Documents" className="btn w-25 mb-3">
+            <DashboardIcons enter={openedFolder} out={closedFolder} alt="document-icon" width="150px" height="150px"/> 
+            <label >Upload and Manage Documents</label>
+          </Link>
+          <Link to="/generate-qr" className="btn w-25 mb-3">
+            <DashboardIcons enter={qrCodeScan} out={qrCode} alt="qr-code-icon" width="150px" height="150px"/>
+            <label className="mt-2">Generate QR Code</label>
+          </Link>
+        </div>
         <div className="w-100 text-center mt-2">
           <Button variant="link" onClick={handleLogout}>
             Sign Out

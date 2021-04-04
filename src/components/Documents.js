@@ -7,10 +7,10 @@ import BasicUI from './BasicUI'
 
 function SearchBar(props) {
   return (
-    <div className="input-group mb-2" style={{maxWidth:"400px"}}>
+    <div className="mx-auto input-group mb-2" style={{maxWidth:"400px"}}>
       <input type="text" className="form-control" placeholder="Search..." aria-label="Search..." aria-describedby="basic-addon2" onChange={props.onChange} value={props.value}/>
-      <div className="inpur-group-prepend">
-        <button className="btn btn-outline-secondary fa fa-search" onClick={props.onClick}></button>
+      <div className="input-group-prepend">
+        <button className="btn btn-outline-secondary rounded fa fa-search" onClick={props.onClick}></button>
       </div>
     </div>
   );
@@ -22,10 +22,11 @@ export default function Documents() {
   const [search, setSearch] = useState()
   const [show, setShow] = useState(false)
   const [error, setError] = useState()
+  const [check, setCheck] = useState([])
   const [expires, setExpires] = useState(true)
   const [loading, setLoading] = useState(false)
   const [files, setFiles] = useState([])
-  const { storageRef, addFile, retrieveFiles, searchFiles } = useAuth()
+  const { storageRef, addFile, retrieveFiles, searchFiles, deleteFiles } = useAuth()
   const handleShow = () => setShow(true)
 
   const handleClose = () => {
@@ -60,18 +61,31 @@ export default function Documents() {
     setSearch('')
   }
 
-  const handleSearch = async(e) => {
-    setSearch(e.target.value)
+  const handleCheck = (e) => {
+    e.target.checked ? setCheck([...check, {name: e.target.name, value: e.target.checked}]):
+                        setCheck(check.filter(item => item.name !== e.target.name));
+  }
+
+  const handleDelete = async () => {
+    try {
+      setLoading(true);
+      await deleteFiles(check);
+      await getFiles();
+      setLoading(false);
+      setCheck([]);
+    } catch(error) {
+      console.log(error)
+    }
   }
 
   useEffect(() => {
     getFiles()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  })
   
   return (
     <BasicUI>
-    {<Modal
+    <Modal
           show={show}
           onHide={handleClose}
           backdrop="static"
@@ -124,14 +138,15 @@ export default function Documents() {
               <Button variant="secondary" disabled={loading} onClick={handleClose}>Cancel</Button>
           </Form>
         </Modal.Body>
-      </Modal>}
-      <SearchBar onClick={getFiles} onChange={handleSearch} value={search}/>
+      </Modal>
+      <SearchBar onClick={getFiles} onChange={(e) => setSearch(e.target.value)} value={search}/>
       <div className="mx-auto mt-2 pt-2" style={{overflow:"scroll", maxWidth:"800px", maxHeight:"250px"}}>
         <table className="table overflow-scroll" >
           <thead>
             <tr>
               <th>Document</th>
               <th>File Expiry</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -141,6 +156,7 @@ export default function Documents() {
                       <tr key={file.name}>
                         <td><a href={file.url}>{file.name}</a></td>
                         <td>{file.expiry}</td>
+                        <td><input onClick={handleCheck} name={file.name} type="checkbox"></input></td>
                       </tr>
                     )
                 })
@@ -148,9 +164,9 @@ export default function Documents() {
           </tbody> 
         </table>
       </div>
-
       <div className="w-100 text-center mt-2">
-      <Button className="w-50 m-2" onClick={handleShow}>Upload Document</Button>
+      <Button className="fa fa-upload w-25 p-1 m-1" disabled={loading} onClick={handleShow}> Upload Document</Button>
+      {check.length > 0 && <Button className="fa fa-trash w-25 p-1 m-1" disabled={loading} onClick={handleDelete}> Delete Documents</Button>}
       <Link to="/"><br/>Back</Link>
       </div>
     </BasicUI>

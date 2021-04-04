@@ -12,22 +12,20 @@ import GenerateQR from "./GenerateQR"
 
 function App() {
   return (
-    <>
-      <Router>
-        <AuthProvider>
-          <Switch>
-            <PrivateRoute exact path="/" component={Dashboard} />
-            <PrivateRoute path="/update-profile" component={UpdateProfile} />
-            <PrivateRoute path="/generate-qr" component={GenerateQR} />
-            <PrivateRoute path="/Documents" component={Documents} />
-            <Route path="/signup" component={Signup} />
-            <Route path="/login" component={Login} />
-            <Route path="/forgot-password" component={ForgotPassword} />
-          </Switch>
-        </AuthProvider>
-      </Router>
-    </>
-    )
+    <Router>
+      <AuthProvider>
+        <Switch>
+          <PrivateRoute exact path="/" component={Dashboard} />
+          <PrivateRoute path="/update-profile" component={UpdateProfile} />
+          <PrivateRoute path="/generate-qr" component={GenerateQR} />
+          <PrivateRoute path="/Documents" component={Documents} />
+          <Route path="/signup" component={Signup} />
+          <Route path="/login" component={Login} />
+          <Route path="/forgot-password" component={ForgotPassword} />
+        </Switch>
+      </AuthProvider>
+    </Router>
+  )
 }
 
 export default App
