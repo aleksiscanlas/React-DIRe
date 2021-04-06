@@ -158,15 +158,15 @@ export default function UpdateProfile() {
             {step === 5 &&
             <>
                 <Form.Group id="password">
-                <Form.Label>Password</Form.Label>
+                <Form.Label>Old Password</Form.Label>
                 <Form.Control type="password" name="password" onChange={handleChange} value={data.password} required/>
                 </Form.Group>
                 <Form.Group id="newPassword">
-                <Form.Label>Password</Form.Label>
+                <Form.Label>New Password</Form.Label>
                 <Form.Control type="password" name="newPassword" onChange={handleChange} value={data.newPassword} required/>
                 </Form.Group>
                 <Form.Group id="password-confirm">
-                <Form.Label>Password Confirmation</Form.Label>
+                <Form.Label>New Password Confirmation</Form.Label>
                 <Form.Control type="password" name="confirm" onChange={handleChange} value={data.confirm} required/>
                 </Form.Group>
                 <Button disabled={loading} className="w-100" type="submit">Confirm</Button>               

@@ -19,7 +19,7 @@ function SearchBar(props) {
 export default function Documents() {
   const fileRef = useRef()
   const dateRef = useRef()
-  const [search, setSearch] = useState()
+  const [search, setSearch] = useState('')
   const [show, setShow] = useState(false)
   const [error, setError] = useState()
   const [check, setCheck] = useState([])
@@ -81,7 +81,7 @@ export default function Documents() {
   useEffect(() => {
     getFiles()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  })
+  }, [])
   
   return (
     <BasicUI>
@@ -139,7 +139,7 @@ export default function Documents() {
           </Form>
         </Modal.Body>
       </Modal>
-      <SearchBar onClick={getFiles} onChange={(e) => setSearch(e.target.value)} value={search}/>
+      <SearchBar onClick={getFiles} value={search} onChange={e => setSearch(e.target.value)} />
       <div className="mx-auto mt-2 pt-2" style={{overflow:"scroll", maxWidth:"800px", maxHeight:"250px"}}>
         <table className="table overflow-scroll" >
           <thead>
