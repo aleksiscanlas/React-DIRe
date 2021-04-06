@@ -4,7 +4,7 @@ import { useAuth } from "../contexts/AuthContext"
 import { Link, useHistory } from "react-router-dom"
 import BasicUI from './BasicUI'
 
-const DataPrivacyModal = (props) => {
+function DataPrivacyModal (props) {
   const handleClose = () => {
     props.setShow(false);
   }

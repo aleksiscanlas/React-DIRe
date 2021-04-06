@@ -60,20 +60,20 @@ export default function Dashboard() {
         {warning && <Alert variant="warning">{warning}</Alert>}
         {error && <Alert variant="danger">{error}</Alert>}
       </div>
-        {/* <p><strong>Email:</strong> {currentUser.uid}</p> */}
-        <div className="container">
-          <Link to="/update-profile" className="btn mb-3" style={{width:"30%"}}>
+        <p><strong>Email:</strong> {currentUser.uid}</p>
+        <div className="dashboard-container">
+          <Link to="/update-profile" className="dashboard-icon btn mb-3" >
             <DashboardIcons enter={man2} out={man} alt="man-icon" width="120px" height="150px"/>
             <DashboardIcons enter={woman2} out={woman} alt="woman-icon" width="120px" height="110px"/>
-            <label>Update Profile</label>
+            <p className="font-weight-bold"><br/>Update Profile</p>
           </Link>
-          <Link to="/Documents" className="btn w-25 mb-3">
+          <Link to="/Documents" className="dashboard-icon btn mb-3">
             <DashboardIcons enter={openedFolder} out={closedFolder} alt="document-icon" width="150px" height="150px"/> 
-            <label >Upload and Manage Documents</label>
+            <p className="font-weight-bold">Upload and Manage Documents</p>
           </Link>
-          <Link to="/generate-qr" className="btn w-25 mb-3">
+          <Link to="/generate-qr" className="dashboard-icon btn mb-3">
             <DashboardIcons enter={qrCodeScan} out={qrCode} alt="qr-code-icon" width="150px" height="150px"/>
-            <label className="mt-2">Generate QR Code</label>
+            <p className="font-weight-bold">Generate QR Code</p>
           </Link>
         </div>
         <div className="w-100 text-center mt-2">

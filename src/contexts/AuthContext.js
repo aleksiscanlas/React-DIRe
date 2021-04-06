@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react"
-import { auth, db, storage } from "../firebase"
+import { auth, db, storage, reAuth } from "../firebase"
 
 const AuthContext = React.createContext()
 
@@ -42,6 +42,7 @@ export function AuthProvider({ children }) {
   }
 
   function updateEmail(email) {
+    usersDB.doc(auth.currentUser.uid).set({Email: email}, {merge:true})
     return currentUser.updateEmail(email)
   }
 
@@ -49,20 +50,8 @@ export function AuthProvider({ children }) {
     return currentUser.updatePassword(password)
   }
 
-  function updateSuffix(suffix) {
-    return usersDB.doc(auth.currentUser.uid).set({Suffix:suffix}, {merge: true})
-  }
-
-  function updateFirst(first) {
-    return usersDB.doc(auth.currentUser.uid).set({First:first}, {merge: true})
-  }
-
-  function updateMiddle(middle) {
-    return usersDB.doc(auth.currentUser.uid).set({Middle:middle}, {merge: true})
-  }
-
-  function updateLast(last) {
-    return usersDB.doc(auth.currentUser.uid).set({Last:last}, {merge: true})
+  function updateUser(info) {
+    return usersDB.doc(auth.currentUser.uid).set(info, {merge: true})
   }
 
   async function addFile(file, expiration) {
@@ -90,7 +79,16 @@ export function AuthProvider({ children }) {
       storageDB.child(storagePath).delete();
       usersDB.doc(auth.currentUser.uid).collection("files").doc(file.name).delete();
     })
-    return "file deleted"
+    return console.log("file deleted")
+  }
+
+  async function reAuthenticateUser(currentPassword) {
+    let credentials = reAuth.credential(auth.currentUser.email, currentPassword);
+    let result = false;
+    await auth.currentUser.reauthenticateWithCredential(credentials)
+      .then(() => result = true)
+      .catch((error) => console.log("Error: ", error))
+    return result
   }
 
   useEffect(() => {
@@ -112,15 +110,13 @@ export function AuthProvider({ children }) {
     resetPassword,
     updateEmail,
     updatePassword,
-    updateSuffix,
-    updateFirst,
-    updateMiddle,
-    updateLast,
+    updateUser,
     storageRef,
     addFile,
     retrieveFiles,
     searchFiles,
-    deleteFiles
+    deleteFiles,
+    reAuthenticateUser
   }
 
   return (
