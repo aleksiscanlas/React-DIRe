@@ -120,21 +120,21 @@ export default function Signup() {
         }
         {step === 2 &&
         <>
-          <Form.Group id="address" className="mt-3">
+          <Form.Group id="address" className="p-2">
             <Form.Label>Address</Form.Label>
             <Form.Control type="text" name="address" onChange={handleChange} value={data.address} required/>
           </Form.Group>
-          <Form.Group id="contact">
+          <Form.Group id="contact" className="p-2">
             <Form.Label>Phone Number</Form.Label>
             <Form.Control type="text" name="contact" onChange={handleChange} value={data.contact} required/>
           </Form.Group>
           <Button className="w-25" onClick={_back}>Back</Button>
-          <Button className="w-25" type="submit">Next</Button>
+          <Button className="w-25 float-right" type="submit">Next</Button>
         </>
         }
         {step === 3 &&
           <>
-            <Form.Group id="civil">
+            <Form.Group id="civil" className="p-2"> 
               <Form.Label>Civil Status</Form.Label>
               <Form.Control name="civil" as="select" onChange={handleChange} value={data.civil} >
                 <option value="Single">Single</option>
@@ -145,7 +145,7 @@ export default function Signup() {
                 <option value="Married">Married</option>
               </Form.Control>
             </Form.Group>
-            <Form.Group id="gender">
+            <Form.Group id="gender" className="p-2">
               <Form.Label>Gender</Form.Label>
               <Form.Control name="gender" as="select" onChange={handleChange} value={data.gender} required>
                 <option>Male</option>
@@ -154,7 +154,7 @@ export default function Signup() {
               </Form.Control>
             </Form.Group>
             <Button className="w-25" onClick={_back}>Back</Button>
-            <Button className="w-25" type="submit">Next</Button>
+            <Button className="w-25  float-right" type="submit">Next</Button>
           </>
         }
         {step === 4 &&
