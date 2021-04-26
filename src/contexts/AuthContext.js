@@ -57,7 +57,7 @@ export function AuthProvider({ children }) {
   async function addFile(file, expiration) {
     const date = new Date()
     const dlURL = await storageDB.child(auth.currentUser.uid).child(file).getDownloadURL()
-    return usersDB.doc(auth.currentUser.uid).collection("files").doc(file).set({FileName:file, FileUpload:date, FileExpiry:expiration, FileModified:date, URL:dlURL},{merge: true})
+    return usersDB.doc(auth.currentUser.uid).collection("files").doc(file).set({Email: auth.currentUser.email, FileName:file, FileUpload:date, FileExpiry:expiration, FileModified:date, URL:dlURL},{merge: true})
   }
 
   function storageRef(file, actual) {

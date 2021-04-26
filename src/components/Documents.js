@@ -41,24 +41,41 @@ export default function Documents() {
     try{
       setError("")
       setLoading(true)
-      await storageRef(fileName, fileRef.current.files[0])
-      addFile(fileName, dateRef.current.value)
-      setLoading(false)
-      getFiles()
-      handleClose()
+      await storageRef(fileName, fileRef.current.files[0]).then(() => {
+        addFile(fileName, dateRef.current.value)
+        getFiles()
+      }).then(() => {
+        setLoading(false)
+      }).finally(() => {
+        handleClose()
+      })
     } catch {
       setError("Document Upload Failed")
     }
   }
 
   const getFiles = async() => {
-    const snapshot = search ? await searchFiles(search): await retrieveFiles()
     let arr = []
-    snapshot.docs.map(doc => {
-      return arr.push({name: doc.data().FileName, url: doc.data().URL, expiry: doc.data().FileExpiry})
-    })
-    setFiles(arr)
-    setSearch('')
+    if(search){
+      await searchFiles(search).then(snapshot => {
+        snapshot.docs.map(doc => {
+          return arr.push({name: doc.data().FileName, url: doc.data().URL, expiry: doc.data().FileExpiry})
+        })
+      }).finally(() => {
+        setFiles(arr)
+        setSearch('')
+      })
+    }else{
+      await retrieveFiles().then(snapshot => {
+        snapshot.docs.map(doc => {
+          return arr.push({name: doc.data().FileName, url: doc.data().URL, expiry: doc.data().FileExpiry})
+        })
+      }).finally(() => {
+        setFiles(arr)
+        setSearch('')
+      })
+    }
+
   }
 
   const handleCheck = (e) => {
@@ -68,11 +85,13 @@ export default function Documents() {
 
   const handleDelete = async () => {
     try {
-      setLoading(true);
-      await deleteFiles(check);
-      await getFiles();
-      setLoading(false);
-      setCheck([]);
+      setLoading(true)
+      await deleteFiles(check).then(() => {
+        getFiles()
+        setCheck([]);
+      }).then(() => {
+        setLoading(false);
+      })
     } catch(error) {
       console.log(error)
     }
