@@ -40,7 +40,7 @@ cron.schedule('10 * * * * *', () => {
                 subject: 'Your File is about to Expire!',
                 html: `
                         <div>Greetings from DIRe Team!</div>
-                        <p>You are receiving this notication for your expired file <a href=${doc.data().URL}">${doc.data().FileName}</a>, Expiring on ${doc.data().FileExpiry}.</p>
+                        <p>You are receiving this notication for your expired file <a href=${doc.data().URL}">${doc.data().FileName}</a>, Expiring this ${doc.data().FileExpiry}.</p>
                         <p>All QR codes that includes this file would be disabled.</p>
                       `
               };

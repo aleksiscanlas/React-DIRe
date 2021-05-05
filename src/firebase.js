@@ -17,4 +17,5 @@ export const auth = app.auth();
 export const reAuth = firebase.auth.EmailAuthProvider;
 export const db = firebase.firestore();
 export const storage = firebase.storage();
+export const qrDB = firebase.firestore().collection('qrCodes');
 export default app;

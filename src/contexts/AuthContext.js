@@ -33,6 +33,14 @@ export function AuthProvider({ children }) {
     return auth.signInWithEmailAndPassword(email, password);
   }
 
+  function anonymousLogin() {
+    return auth.signInAnonymously()
+  }
+
+  async function retrieveQRData(uid, qrname) {
+    return await usersDB.doc(uid).collection("QR").where("qr", "==", qrname).get()
+  }
+
   function logout() {
     return auth.signOut();
   }
@@ -91,6 +99,14 @@ export function AuthProvider({ children }) {
     return result
   }
 
+  async function storeQR(doc) {
+    return await  usersDB.doc(auth.currentUser.uid).collection("QR").doc(doc.qr).set(doc);
+  }
+
+  async function getQR(doc) {
+    return usersDB.doc(auth.currentUser.uid).collection("QR").get();
+  }
+
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user => {
       setCurrentUser(user)
@@ -101,7 +117,11 @@ export function AuthProvider({ children }) {
 
   const value = {
     currentUser,
+    anonymousLogin,
+    storeQR,
+    getQR,
     login,
+    retrieveQRData,
     signup,
     signupFirestore,
     logout,

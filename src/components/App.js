@@ -9,6 +9,8 @@ import ForgotPassword from "./ForgotPassword"
 import UpdateProfile from "./UpdateProfile"
 import Documents from "./Documents"
 import GenerateQR from "./GenerateQR"
+import ScanQR from "./ScanQR"
+import NotFound from "./NotFound"
 
 function App() {
   return (
@@ -22,6 +24,8 @@ function App() {
           <Route path="/signup" component={Signup} />
           <Route path="/login" component={Login} />
           <Route path="/forgot-password" component={ForgotPassword} />
+          <Route exact path='/:uid/:qr' component={ScanQR} /> 
+          <Route path='/' component={NotFound}/>
         </Switch>
       </AuthProvider>
     </Router>

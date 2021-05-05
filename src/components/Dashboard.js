@@ -43,16 +43,12 @@ export default function Dashboard() {
 
 
   useEffect(()=>{
-    let isMounted = true;
-    if(isMounted){
-      const check = async() => {
-        const res = await currentUser.emailVerified
-        if(!res) setWarning(resendEmail)
-      }
-      check()
-    } 
-    return ()=> isMounted=false;
-  })
+    const check = async() => {
+      const res = await currentUser.emailVerified
+      if(!res) setWarning(resendEmail)
+    }
+    check()
+  }, [])
 
   return ( 
     <BasicUI styling="text-center"> 
@@ -60,7 +56,7 @@ export default function Dashboard() {
         {warning && <Alert variant="warning">{warning}</Alert>}
         {error && <Alert variant="danger">{error}</Alert>}
       </div>
-        <p><strong>Email:</strong> {currentUser.uid}</p>
+        {/* <p><strong>Email:</strong> {currentUser.uid}</p> */}
         <div className="dashboard-container">
           <Link to="/update-profile" className="dashboard-icon btn mb-3" >
             <DashboardIcons enter={man2} out={man} alt="man-icon" width="120px" height="150px"/>
