@@ -85,7 +85,7 @@ export default function UpdateProfile() {
                         <option value="5">Update Password</option>
                     </Form.Control>
                 </Form.Group>
-                <Button onClick={() => setStep(data.selector)} className="w-100">Proceed</Button>   
+                <Button variant="info" onClick={() => setStep(data.selector)} className="w-100">Proceed</Button>   
             </>
             }
             {step === 1 && 

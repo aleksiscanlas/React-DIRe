@@ -62,10 +62,10 @@ export function AuthProvider({ children }) {
     return usersDB.doc(auth.currentUser.uid).set(info, {merge: true})
   }
 
-  async function addFile(file, expiration) {
+  async function addFile(file, expiration, disabled) {
     const date = new Date()
     const dlURL = await storageDB.child(auth.currentUser.uid).child(file).getDownloadURL()
-    return usersDB.doc(auth.currentUser.uid).collection("files").doc(file).set({Email: auth.currentUser.email, FileName:file, FileUpload:date, FileExpiry:expiration, FileModified:date, URL:dlURL},{merge: true})
+    return usersDB.doc(auth.currentUser.uid).collection("files").doc(file).set({uid: currentUser.uid, Email: auth.currentUser.email, FileName:file, FileUpload:date, FileExpiry:expiration, FileModified:date, URL:dlURL, Disabled: disabled},{merge: true})
   }
 
   function storageRef(file, actual) {
@@ -90,6 +90,13 @@ export function AuthProvider({ children }) {
     return console.log("file deleted")
   }
 
+  async function deleteQR(qr) {
+    qr.forEach(q =>{
+      usersDB.doc(auth.currentUser.uid).collection("QR").doc(q.name).delete();
+    })
+    return console.log("QR deleted")
+  }
+
   async function reAuthenticateUser(currentPassword) {
     let credentials = reAuth.credential(auth.currentUser.email, currentPassword);
     let result = false;
@@ -103,7 +110,7 @@ export function AuthProvider({ children }) {
     return await  usersDB.doc(auth.currentUser.uid).collection("QR").doc(doc.qr).set(doc);
   }
 
-  async function getQR(doc) {
+  async function getQR() {
     return usersDB.doc(auth.currentUser.uid).collection("QR").get();
   }
 
@@ -121,6 +128,7 @@ export function AuthProvider({ children }) {
     storeQR,
     getQR,
     login,
+    deleteQR,
     retrieveQRData,
     signup,
     signupFirestore,

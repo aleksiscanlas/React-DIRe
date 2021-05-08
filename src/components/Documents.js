@@ -17,17 +17,22 @@ function SearchBar(props) {
 }
 
 export default function Documents() {
-  const fileRef = useRef()
-  const dateRef = useRef()
-  const [search, setSearch] = useState('')
-  const [show, setShow] = useState(false)
-  const [error, setError] = useState()
-  const [check, setCheck] = useState([])
-  const [expires, setExpires] = useState(true)
-  const [loading, setLoading] = useState(false)
-  const [files, setFiles] = useState([])
-  const { storageRef, addFile, retrieveFiles, searchFiles, deleteFiles } = useAuth()
-  const handleShow = () => setShow(true)
+  const fileRef = useRef();
+  const dateRef = useRef();
+  const [search, setSearch] = useState('');
+  const [show, setShow] = useState(false);
+  const [error, setError] = useState();
+  const [check, setCheck] = useState([]);
+  const [expires, setExpires] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [files, setFiles] = useState([]);
+  const { storageRef, addFile, retrieveFiles, searchFiles, deleteFiles } = useAuth();
+  const handleShow = () => setShow(true);
+  const date = new Date();
+  const currDate = date.getFullYear() + '-'
+             + ('0' + (date.getMonth()+1)).slice(-2) + '-'
+             +  ('0' + date.getDate()).slice(-2);
+  var expiredFile = false;
 
   const handleClose = () => {
     setShow(false)
@@ -38,11 +43,12 @@ export default function Documents() {
   async function handleSubmit(e) {
     e.preventDefault()
     const fileName = fileRef.current.files[0].name;
+    if(dateRef.current.value < currDate) expiredFile = true;
     try{
       setError("")
       setLoading(true)
       await storageRef(fileName, fileRef.current.files[0]).then(() => {
-        addFile(fileName, dateRef.current.value)
+        addFile(fileName, dateRef.current.value, expiredFile)
         getFiles()
       }).then(() => {
         setLoading(false)
@@ -59,7 +65,7 @@ export default function Documents() {
     if(search){
       await searchFiles(search).then(snapshot => {
         snapshot.docs.map(doc => {
-          return arr.push({name: doc.data().FileName, url: doc.data().URL, expiry: doc.data().FileExpiry})
+          return arr.push({name: doc.data().FileName, url: doc.data().URL, expiry: doc.data().FileExpiry, disabled: doc.data().Disabled})
         })
       }).finally(() => {
         setFiles(arr)
@@ -68,7 +74,7 @@ export default function Documents() {
     }else{
       await retrieveFiles().then(snapshot => {
         snapshot.docs.map(doc => {
-          return arr.push({name: doc.data().FileName, url: doc.data().URL, expiry: doc.data().FileExpiry})
+          return arr.push({name: doc.data().FileName, url: doc.data().URL, expiry: doc.data().FileExpiry, disabled: doc.data().Disabled})
         })
       }).finally(() => {
         setFiles(arr)
@@ -174,7 +180,9 @@ export default function Documents() {
                     return (
                       <tr key={file.name}>
                         <td><a href={file.url}>{file.name}</a></td>
-                        <td>{file.expiry}</td>
+                        {file.disabled ? <td>Expired</td>:
+                          <td>{file.expiry}</td>
+                        }
                         <td><input onClick={handleCheck} name={file.name} type="checkbox"></input></td>
                       </tr>
                     )
@@ -184,9 +192,9 @@ export default function Documents() {
         </table>
       </div>
       <div className="w-100 text-center mt-2">
-      <Button className="fa fa-upload w-25 p-1 m-1" disabled={loading} onClick={handleShow}> Upload Document</Button>
-      {check.length > 0 && <Button className="fa fa-trash w-25 p-1 m-1" disabled={loading} onClick={handleDelete}> Delete Documents</Button>}
-      <Link to="/"><br/>Back</Link>
+      <Button variant="info" className="fa fa-upload w-25 p-1 m-1" disabled={loading} onClick={handleShow}> Upload Document</Button>
+      {check.length > 0 && <Button variant="info" className="fa fa-trash w-25 p-1 m-1" disabled={loading} onClick={handleDelete}> Delete Documents</Button>}
+      <Link to="/"><br/><br/>🡠 Back</Link>
       </div>
     </BasicUI>
   )

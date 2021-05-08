@@ -21,40 +21,49 @@ const date = new Date();
 const currDate = date.getFullYear() + '-'
              + ('0' + (date.getMonth()+1)).slice(-2) + '-'
              +  ('0' + date.getDate()).slice(-2);
-console.log(currDate)
 
 let email = [];
 
+//scheduled checker
 cron.schedule('10 * * * * *', () => {
+  console.log(currDate)
   const sendEmailNotification = async() => {
+    //retrieves all the email of users
     const users = await db.collection('users').get().then(res => {
       res.docs.map(doc => email.push(doc.data().Email))
     }).then(() => {
       email.forEach(async(em) => {
-        const files = await db.collectionGroup('files').where('Email', '==', em).where('FileExpiry', '==', currDate).get().then(res => {
-            res.docs.map(doc => {
-              console.log(doc.data().FileName)
-              const mailOptions = {
-                from: 'direteam510@gmail.com',
-                to: em,
-                subject: 'Your File is about to Expire!',
-                html: `
-                        <div>Greetings from DIRe Team!</div>
-                        <p>You are receiving this notication for your expired file <a href=${doc.data().URL}">${doc.data().FileName}</a>, Expiring this ${doc.data().FileExpiry}.</p>
-                        <p>All QR codes that includes this file would be disabled.</p>
-                      `
-              };
-              transporter.sendMail(mailOptions, (error, info) => {
-                if(error){
-                    console.log(error)
-                }else{
-                    console.log("Email Sent! " + info.response)
-                }
-             })
+        //queries all files that expires today across the whole database
+        await db.collectionGroup('files').where('Email', '==', em).where('FileExpiry', '==', currDate).get().then(res => {
+            res.docs.map(async doc => {
+              //checks if an email is already sent to the user
+              if(doc.data().Disabled === false){
+                await db.collection('users').doc(doc.data().uid).collection('files').doc(doc.data().FileName).set({Disabled: true}, {merge: true}).catch(err => console.log(err, 'hello'))
+                console.log(doc.data().FileName)
+                const mailOptions = {
+                  from: 'direteam510@gmail.com',
+                  to: em,
+                  subject: 'Your File is about to Expire!',
+                  html: `
+                          <div>Greetings from DIRe Team!</div>
+                          <p>You are receiving this notication for your expired file <a href=${doc.data().URL}">${doc.data().FileName}</a>, Expiring this ${doc.data().FileExpiry}.</p>
+                          <p>All QR codes that includes this file would be disabled.</p>
+                        `
+                };
+                transporter.sendMail(mailOptions, (error, info) => {
+                  if(error){
+                      console.log(error)
+                  }else{
+                      console.log(`Email to ${em} on file ${doc.data().FileName} Sent! ` + info.response)
+                  }
+                })
+              }else{
+                console.log(`Email: ${em} ---- File:${doc.data().FileName} ---- Remarks: File Disabled Already`)
+              }
             })         
-        });
+        }).catch(err => console.log(err));
       })
-    });
+    }).catch(err => console.log(err));
   }
   sendEmailNotification();
 })

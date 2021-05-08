@@ -3,31 +3,53 @@ import { Link } from 'react-router-dom'
 import * as QRCode from 'easyqrcodejs'
 import BasicUI from './BasicUI'
 import { useAuth } from "../contexts/AuthContext"
-import { Form, Button, Modal } from "react-bootstrap"
+import { Form, Button, Modal} from "react-bootstrap"
+import wmark from "./images/dire-icon.png"
 
 function GenerateQRModal (props) {
-  const { getQR } = useAuth()
-  const [qrs, setQRS] = useState([])
+  const { getQR, deleteQR } = useAuth();
+  const [check, setCheck] = useState([]);
+  const [qrs, setQRS] = useState([]);
+  const [loading, setLoading] = useState(false);
   const handleClose = () => {
     props.setShow(false);
   }
 
   let arr= []
 
+  const handleCheck = (e) => {
+    e.target.checked ? setCheck([...check, {name: e.target.name, value: e.target.checked}]):
+                        setCheck(check.filter(item => item.name !== e.target.name));
+  }
+
   const retrieveQR = async() => {
     await getQR().then(snapshot => {
       snapshot.docs.map(doc => {
-        return arr.push({name: doc.data().qr, url: doc.data().qrImage, expiry: doc.data().expiration, files: doc.data().files})
+        return arr.push({name: doc.data().qr, url: doc.data().qrImage, expiry: doc.data().expires, files: doc.data().files})
       })
     }).then(() => {
       setQRS(arr)
     })
   }
 
+  const handleDelete = async () => {
+    try {
+      setLoading(true)
+      await deleteQR(check).then(() => {
+        retrieveQR()
+        setCheck([]);
+      }).then(() => {
+        setLoading(false);
+      })
+    } catch(error) {
+      console.log(error)
+    }
+  }
+
   useEffect(() => {
     retrieveQR()
     //eslint-disable-next-line
-  }, [])
+  }, [props.show])
 
   return (
     <Modal
@@ -41,12 +63,12 @@ function GenerateQRModal (props) {
         <Modal.Title>Stored QR Code</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-      <table className="table overflow-scroll" >
+      <table className="w-75 table overflow-scroll" >
           <thead>
             <tr>
               <th>QR</th>
               <th>Name</th>
-              <th>QR Expiry</th>
+              <th>Expiration</th>
               <th></th>
             </tr>
           </thead>
@@ -55,9 +77,10 @@ function GenerateQRModal (props) {
                 qrs.map(ar => {
                     return (
                       <tr key={ar.name}>
-                        <td><img src={ar.url} alt="qr"/></td>
+                        <td><a download={ar.url} href={ar.url} target="_blank" rel="noopener noreferrer"><img src={ar.url} className="w-75" alt="qr"/></a></td>
                         <td>{ar.name}</td>
                         <td>{ar.expiry}</td>
+                        <td><input onClick={handleCheck} name={ar.name} type="checkbox"></input></td>
                       </tr>
                     )
                 })
@@ -66,7 +89,8 @@ function GenerateQRModal (props) {
       </table>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="primary" onClick={handleClose}>Close</Button>
+        {check.length > 0 && <Button  variant="info" className="fa fa-trash w-25 p-1 ml-1" disabled={loading} onClick={handleDelete}>  Delete</Button>}
+        <Button variant="outline-info" onClick={handleClose}>Close</Button>
       </Modal.Footer>
     </Modal>
   );
@@ -80,14 +104,14 @@ export default function GenerateQR() {
   const [data, setData] = useState({qr: '', 
                                   qrImage: '', 
                                   files: [], 
-                                  expiration: ''})
+                                  expires: ''})
   const [check, setCheck] = useState([])
   const [hide, setHide] = useState(true)
   const [disable, setDisable] = useState(false)
 
   const handleCheck = (e) => {
     const f = e.target.name.split("~~")
-    e.target.checked ? setCheck([...check, {name: f[0], url: f[1], value: e.target.checked}]):
+    e.target.checked ? setCheck([...check, {name: f[0], url: f[1], expired: f[2], value: e.target.checked}]):
                         setCheck(check.filter(item => item.name !== f[0]));
   }
 
@@ -95,7 +119,7 @@ export default function GenerateQR() {
     let arr = []
     await retrieveFiles().then(snapshot => {
       snapshot.docs.map(doc => {
-        return arr.push({name: doc.data().FileName, url: doc.data().URL, expiry: doc.data().FileExpiry})
+        return arr.push({name: doc.data().FileName, url: doc.data().URL, expiry: doc.data().FileExpiry, disabled: doc.data().Disabled})
       })
     }).finally(() => {
       setFiles(arr)
@@ -109,18 +133,46 @@ export default function GenerateQR() {
       setDisable(false)
       setData({qr: '', qrImage: ''})
     })
-    console.log(data)
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
     var options = {
       text: `https://maindb-8acfe.web.app/${currentUser.uid}/${data.qr}`,
-      width: 100,
-      height: 100,
+      width: 200,
+      height: 200,
+      colorDark : "#31c6e8",
+      colorLight : "#ffffff",
+      quietZone: 10,
+      quietZoneColor: "rgba(49,232,159,0.6)",
+      logo:wmark,
+      logoWidth:50,
+      logoHeight:50,
+      logoBackgroundTransparent:false,
+      logoBackgroundColor: '#ffffff',
+      correctLevel : QRCode.CorrectLevel.H,
     }
     new QRCode( qrcode.current, options);
-    setData({...data, qrImage: qrcode.current.children[0].toDataURL(), files:check}) 
+    var ch = check.length
+    var expires;
+    switch(ch){
+      case 0: expires="None"; break;
+      case 1: expires=check[0].expired;
+              break;
+      case 2: if(check[0].expired < check[1].expired){
+                expires=check[0].expired
+              }else{
+                expires=check[1].expired
+              }
+              break;
+      default: expires = check[0].expired
+              check.forEach(che => {
+                if(che.expired !== ''){
+                  expires = che.expired < expires ? che.expired : expires
+                }
+              })
+    }
+    setData({...data, qrImage: qrcode.current.children[0].toDataURL(), expires: expires, files:check}) 
     setHide(false)
     setDisable(true)
   }
@@ -148,23 +200,25 @@ export default function GenerateQR() {
     <BasicUI>
     <GenerateQRModal show={show} setShow={setShow}/>
     <div className="w-100 text-center mt-2">
-    <Button onClick={()=>setShow(!show)}>QR Codes</Button>
+    <Button variant="info" onClick={()=>setShow(!show)}>View your QR codes</Button><br/><br/><br/>
       <div>
 
       </div>
       <Form className="w-50 mx-auto" onSubmit={handleSubmit}>
           <Form.Group id="qr">
-            <Form.Label>Name</Form.Label>
-            <Form.Control disabled={disable} type="text" name="qr" onChange={handleChange} value={data.qr} required/>
+          <Form.Label>QR Code name</Form.Label>
+          <Form.Control disabled={disable} type="text" name="qr" onChange={handleChange} value={data.qr} required/>
           </Form.Group>
           {hide ?
-            <Button type="submit">Generate</Button>:
+            <Button variant="info" type="submit">Generate new QR code</Button>:
             <>
-            <Button onClick={storeIT}>Save</Button>
-            <Button onClick={deleteQR}>Cancel</Button>
+            <Button variant="info" className="m-2" onClick={storeIT}>Save</Button>
+            <Button variant="info" onClick={deleteQR}>Cancel</Button>
             </>
           }
+          <br/><br/>
       </Form>
+      <div ref={qrcode}></div>
       <table className="table overflow-scroll" >
           <thead>
             <tr>
@@ -180,15 +234,14 @@ export default function GenerateQR() {
                       <tr key={file.name}>
                         <td><a href={file.url}>{file.name}</a></td>
                         <td>{file.expiry}</td>
-                        <td><input onClick={handleCheck} name={file.name + "~~" + file.url} type="checkbox"></input></td>
+                        <td><input onClick={handleCheck} disabled={file.disabled} name={file.name + "~~" + file.url + '~~' + file.expiry} type="checkbox"></input></td>
                       </tr>
                     )
                 })
             }  
           </tbody> 
       </table>
-      <ul ref={qrcode}></ul>
-      <Link className="m-2 p-2" to="/">Back</Link>
+      <Link className="m-2 p-2" to="/">🡠 Back</Link>
     </div>     
     </BasicUI>
   )
