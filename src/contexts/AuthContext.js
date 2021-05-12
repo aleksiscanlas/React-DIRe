@@ -114,6 +114,10 @@ export function AuthProvider({ children }) {
     return usersDB.doc(auth.currentUser.uid).collection("QR").get();
   }
 
+  function getUser(uid) {
+    return usersDB.doc(uid).get();
+  }
+
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user => {
       setCurrentUser(user)
@@ -127,6 +131,7 @@ export function AuthProvider({ children }) {
     anonymousLogin,
     storeQR,
     getQR,
+    getUser,
     login,
     deleteQR,
     retrieveQRData,

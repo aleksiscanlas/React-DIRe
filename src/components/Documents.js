@@ -42,21 +42,25 @@ export default function Documents() {
 
   async function handleSubmit(e) {
     e.preventDefault()
-    const fileName = fileRef.current.files[0].name;
-    if(dateRef.current.value < currDate) expiredFile = true;
-    try{
-      setError("")
-      setLoading(true)
-      await storageRef(fileName, fileRef.current.files[0]).then(() => {
-        addFile(fileName, dateRef.current.value, expiredFile)
-        getFiles()
-      }).then(() => {
-        setLoading(false)
-      }).finally(() => {
-        handleClose()
-      })
-    } catch {
-      setError("Document Upload Failed")
+    if(fileRef.current.files[0].size/1024/1024 > 30){
+      setError("File Size Limit Exceeded")
+    }else{
+      const fileName = fileRef.current.files[0].name;
+      if(dateRef.current.value < currDate) expiredFile = true;
+      try{
+        setError("")
+        setLoading(true)
+        await storageRef(fileName, fileRef.current.files[0]).then(() => {
+          addFile(fileName, dateRef.current.value, expiredFile)
+          getFiles()
+        }).then(() => {
+          setLoading(false)
+        }).finally(() => {
+          handleClose()
+        })
+      } catch {
+        setError("Document Upload Failed")
+      }
     }
   }
 
@@ -131,6 +135,7 @@ export default function Documents() {
               <Form.Control 
                   type="file" 
                   ref={fileRef}
+                  required
                   >
               </Form.Control>
             </Form.Group>
@@ -180,7 +185,7 @@ export default function Documents() {
                     return (
                       <tr key={file.name}>
                         <td><a href={file.url}>{file.name}</a></td>
-                        {file.disabled ? <td>Expired</td>:
+                        {file.disabled && file.expiry !== "" ? <td>Expired</td>:
                           <td>{file.expiry}</td>
                         }
                         <td><input onClick={handleCheck} name={file.name} type="checkbox"></input></td>

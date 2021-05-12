@@ -41,7 +41,6 @@ export default function Dashboard() {
     }
   }
 
-
   useEffect(()=>{
     const check = async() => {
       const res = await currentUser.emailVerified
