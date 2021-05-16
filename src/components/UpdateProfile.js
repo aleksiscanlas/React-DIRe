@@ -38,7 +38,11 @@ export default function UpdateProfile() {
                 if(Object.keys(updateObject).length > 0){
                     try{
                         await updateUser(updateObject)
-                            .then(() => history.push("/"));
+                            .then(() => {
+                                history.push("/")
+                            }).catch(err => {
+                                setError(err.message)
+                            });
                     } catch {
                         console.log("Something went wrong!")
                     } 

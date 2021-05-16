@@ -35,18 +35,23 @@ export default function Dashboard() {
 
     try {
       await logout()
-      history.push("/login")
+      
     } catch {
       setError("Failed to log out")
     }
   }
 
-  useEffect(()=>{
-    const check = async() => {
-      const res = await currentUser.emailVerified
-      if(!res) setWarning(resendEmail)
+  const check = async() => {
+    if(currentUser.email === null) {
+      history.push("/login")
     }
+    const res = await currentUser.emailVerified;
+    if(!res) setWarning(resendEmail);
+  }
+
+  useEffect(()=>{
     check()
+    //eslint-disable-next-line
   }, [])
 
   return ( 

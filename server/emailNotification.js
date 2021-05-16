@@ -29,7 +29,7 @@ cron.schedule('10 * * * * *', () => {
   console.log(currDate)
   const sendEmailNotification = async() => {
     //retrieves all the email of users
-    const users = await db.collection('users').get().then(res => {
+    await db.collection('users').get().then(res => {
       res.docs.map(doc => email.push(doc.data().Email))
     }).then(() => {
       email.forEach(async(em) => {
@@ -64,6 +64,7 @@ cron.schedule('10 * * * * *', () => {
         }).catch(err => console.log(err));
       })
     }).catch(err => console.log(err));
+    email = []
   }
   sendEmailNotification();
 })

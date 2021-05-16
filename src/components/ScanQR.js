@@ -1,28 +1,33 @@
 import React, { useState, useEffect } from "react"
 import { useAuth } from "../contexts/AuthContext"
 import { useParams } from 'react-router-dom'
-
+import { Image, Button } from 'react-bootstrap'
+import { Link } from "react-router-dom"
+import logo from "./images/dire-logo.png"
+import * as JSZip from 'jszip'
+import * as JSZipUtils from 'jszip-utils'
 
 const Owner = (props) => {
-    console.log(typeof(props.data));
     return (
-        <ul>
-            {
-                Object.keys(props.data).map(function(keyName, keyIndex) {
-                    return <div key={keyName}>{keyName}: {props.data[keyName]}</div>
-                    // use keyName to get current key's name
-                    // and a[keyName] to get its value
-                })
-            }
-        </ul>
+        <div>
+            <h5>Personal Details</h5>
+            <p>Name: {`${props.data['Last']}, ${props.data['First']} ${props.data['Middle']} ${props.data['Suffix']}`}</p>
+            <p>Email: {`${props.data['Email']}`}</p>
+            <p>Contact: {`${props.data['Contact']}`}</p>
+            <p>Address: {`${props.data['Address']}`}</p>
+            <p>Gender: {`${props.data['Gender']}`}</p>
+            <p>Civil: {`${props.data['Civil']}`}</p>
+        </div>
     )
 }
+
 export default function ScanQR() {
     const { uid, qr } = useParams()
     const { anonymousLogin, retrieveQRData, getUser, currentUser } = useAuth()
     const [files, setFiles] = useState([])
     const [expired, setExpired] = useState(false)
     const [owner, setOwner] = useState()
+    var urls = [];
 
     const date = new Date();
     const currDate = date.getFullYear() + '-'
@@ -37,59 +42,99 @@ export default function ScanQR() {
                     if (Date.parse(currDate) >= Date.parse(doc.data().expires)) {
                         setExpired(true)
                     }
-                    setFiles([...doc.data().files])
+                    return setFiles([...doc.data().files])
                 })
             }
         }).catch(err => console.log(err));
         //retrieve qr owner data  
         await getUser(uid).then(snapshot => {
             setOwner(snapshot.data())
-            console.log(owner)
         }).catch(err => console.log(err));   
     }
 
-    //runs if currentUser changes
-    useEffect(() => {
-        const retrieveData = async() => {
-            if(currentUser){
-                console.log(currentUser.uid)
-                getDataAndUser();
-            }else{
-                //provision an anonymous account if current user does not exist
-                await anonymousLogin().catch(err => {
-                    console.log(err)
-                })              
-            }
+    const retrieveData = async() => {
+        if(currentUser){
+            getDataAndUser();
+        }else{
+            //provision an anonymous account if current user does not exist
+            await anonymousLogin().catch(err => {
+                console.log(err)
+            })              
         }
+    }
+
+    const handleDownload = (e) => {
+        var zip = new JSZip();
+        var count = 0;
+
+        urls.forEach((url) => {
+            // loading a file and add it in a zip file
+            JSZipUtils.getBinaryContent(url[1], (err, data) => {
+                if(err) {
+                    throw err; // or handle the error
+                }
+                console.log(`${owner.Last}, ${owner.First} ${owner.Last}`)
+                zip.file(url[0], data, {binary:true});
+                count++;
+                if (count === urls.length) {        
+                    zip.generateAsync({type:'blob', comment: 'Zip Generated from DIRe - An all-in-one Identification Record'}).then(function(content) {
+                        var link = document.createElement('a');
+                        link.href = URL.createObjectURL(content);
+                        link.download = `${owner.Last}, ${owner.First} ${owner.Last}.zip`;
+                        link.click();
+                    });
+                }
+            });
+        });
+    }
+    
+    useEffect(() => {
         retrieveData();
+        //eslint-disable-next-line
     }, [currentUser])
 
     return (
         <div>
             {expired ? <div>Sorry! The QR Code you Scanned may have an expired file in it</div>:
-                <>  
-                    {owner ? <Owner data={owner}/>:
-                    <div>Retrieving Data...</div>}
-                    <table className="table overflow-scroll" >
-                    <thead>
-                        <tr>
-                        <th>Document</th>
-                        <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {
-                            files.map(file => {
-                                return (
-                                <tr key={file.name}>
-                                    <td><a href={file.url}>{file.name}</a></td>
+                <div className="text-center"> 
+                    <Link to="/forgot-password">
+                        <Image src={logo} fluid/>
+                    </Link>
+                    <div className="d-flex justify-content-center">
+                        <div className="text-left pr-2">
+                            {owner ? <Owner data={owner}/>:
+                            <div>Retrieving Data...</div>}
+                        </div>
+                        <div className="text-left pl-3">
+                            <table className="table overflow-scroll" >
+                            <thead>
+                                <tr>
+                                <th>Document</th>
+                                <th></th>
                                 </tr>
-                                )
-                            })
-                        }  
-                    </tbody> 
-                    </table>
-                </>
+                            </thead>
+                            <tbody>
+                                {
+                                    files.map(file => {
+                                        urls.push([file.name, file.url])
+                                        return (
+                                        <tr key={file.name}>
+                                            <td><a href={file.url} target="_blank" rel="noopener noreferrer">{file.name}</a></td>
+                                        </tr>
+                                        )
+                                    })
+                                }  
+                            </tbody> 
+                            </table>
+                        </div>
+                    </div>
+                    <Button className="mt-4 fa fa-download" variant="info" onClick={handleDownload}> Download</Button>
+                    <div className="mt-5 font-weight-bold">
+                        <p>"A digital all-in-one QR code Identifcation system"<br/>
+                        DIRe support email: DigIDRecord@gmail.com
+                        </p>
+                    </div>
+                </div>
             }
         </div>
     )

@@ -6,6 +6,7 @@
       "destination": "/index.html"
     }],  
     "ignore": [
+      "**/server/**",
       "firebase.json",
       "**/.*",
       "**/node_modules/**"

@@ -51,12 +51,16 @@ export default function Documents() {
         setError("")
         setLoading(true)
         await storageRef(fileName, fileRef.current.files[0]).then(() => {
-          addFile(fileName, dateRef.current.value, expiredFile)
-          getFiles()
-        }).then(() => {
-          setLoading(false)
-        }).finally(() => {
-          handleClose()
+          addFile(fileName, dateRef.current.value, expiredFile).then(() => {
+              getFiles()
+              setLoading(false)
+              handleClose()
+          }).catch(err => {
+              setError(err.message)
+              setLoading(false)
+          })
+        }).catch(err => {
+          setError(err.message)
         })
       } catch {
         setError("Document Upload Failed")
@@ -83,6 +87,8 @@ export default function Documents() {
       }).finally(() => {
         setFiles(arr)
         setSearch('')
+      }).catch(err => {
+        setError(err.message)
       })
     }
 
