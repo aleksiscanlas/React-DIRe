@@ -23,7 +23,7 @@ const Owner = (props) => {
 
 export default function ScanQR() {
     const { uid, qr } = useParams()
-    const { anonymousLogin, retrieveQRData, getUser, currentUser } = useAuth()
+    const { anonymousLogin, retrieveQRData, getUser, currentUser, logUser } = useAuth()
     const [files, setFiles] = useState([])
     const [expired, setExpired] = useState(false)
     const [owner, setOwner] = useState()
@@ -40,7 +40,7 @@ export default function ScanQR() {
             if(!snapshot.exists) {
                 snapshot.docs.map(doc => {
                     if (Date.parse(currDate) >= Date.parse(doc.data().expires)) {
-                        setExpired(true)
+                        return setExpired(true)
                     }
                     return setFiles([...doc.data().files])
                 })
@@ -63,7 +63,7 @@ export default function ScanQR() {
         }
     }
 
-    const handleDownload = (e) => {
+    const handleDownload = async(e) => {
         var zip = new JSZip();
         var count = 0;
 
@@ -73,7 +73,6 @@ export default function ScanQR() {
                 if(err) {
                     throw err; // or handle the error
                 }
-                console.log(`${owner.Last}, ${owner.First} ${owner.Last}`)
                 zip.file(url[0], data, {binary:true});
                 count++;
                 if (count === urls.length) {        
@@ -86,7 +85,9 @@ export default function ScanQR() {
                 }
             });
         });
+        await logUser(currentUser.uid, qr, owner.Email, date)
     }
+    
     
     useEffect(() => {
         retrieveData();
@@ -97,7 +98,7 @@ export default function ScanQR() {
         <div>
             {expired ? <div>Sorry! The QR Code you Scanned may have an expired file in it</div>:
                 <div className="text-center"> 
-                    <Link to="/forgot-password">
+                    <Link to="/">
                         <Image src={logo} fluid/>
                     </Link>
                     <div className="d-flex justify-content-center">

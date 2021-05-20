@@ -11,11 +11,17 @@ function GenerateQRModal (props) {
   const [check, setCheck] = useState([]);
   const [qrs, setQRS] = useState([]);
   const [loading, setLoading] = useState(false);
+  let arr= [];
+  const date = new Date();
+
   const handleClose = () => {
     props.setShow(false);
   }
 
-  let arr= []
+  const currDate = date.getFullYear() + '-'
+           + ('0' + (date.getMonth()+1)).slice(-2) + '-'
+           +  ('0' + date.getDate()).slice(-2);
+
 
   const handleCheck = (e) => {
     e.target.checked ? setCheck([...check, {name: e.target.name, value: e.target.checked}]):
@@ -63,7 +69,7 @@ function GenerateQRModal (props) {
         <Modal.Title>Stored QR Code</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-      <table className="w-75 table overflow-scroll" >
+      <table className="w-100 table overflow-scroll" >
           <thead>
             <tr>
               <th>QR</th>
@@ -77,9 +83,9 @@ function GenerateQRModal (props) {
                 qrs.map(ar => {
                     return (
                       <tr key={ar.name}>
-                        <td><a download={ar.url} href={ar.url} target="_blank" rel="noopener noreferrer"><img src={ar.url} className="w-75" alt="qr"/></a></td>
+                        <td><a download={ar.name} href={ar.url} target="_blank" rel="noopener noreferrer"><img src={ar.url} className="w-75" alt="qr"/></a></td>
                         <td>{ar.name}</td>
-                        <td>{ar.expiry}</td>
+                        <td>{Date.parse(ar.expiry) > Date.parse(currDate) || ar.expiry ? ar.expiry : 'Expired'}</td>
                         <td><input onClick={handleCheck} name={ar.name} type="checkbox"></input></td>
                       </tr>
                     )
@@ -96,6 +102,74 @@ function GenerateQRModal (props) {
   );
 }
 
+function QRLogModal (props) {
+  const { getLog } = useAuth()
+  const [logs, setLogs] = useState([])
+  let arr = [];
+  const handleClose = () => {
+    props.setShow(false);
+  }
+
+  const retrieveLog = async() => {
+    await getLog().then(snapshot => {
+      snapshot.docs.map(doc => {
+        var tempDate = doc.data().DateAccessed.toDate().toString().slice(0,24);
+        return arr.push({AccessedBy: doc.data().AccessedBy, Date: tempDate, QR: doc.data().qrCode})
+      })
+    }).then(() => {
+      setLogs(arr)
+    })
+  }
+
+  useEffect(() => {
+    retrieveLog()
+    //eslint-disable-next-line
+  }, [props.show])
+
+  return (
+    <Modal
+    show={props.show}
+    onHide={handleClose}
+    animation={false}
+    backdrop="static"
+    keyboard={false}
+    >
+      <Modal.Header closeButton>
+        <Modal.Title>Logs for Accessed QR Codes</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+      <table className="w-100 table overflow-scroll" >
+          <thead>
+            <tr>
+              <th>QR</th>
+              <th>Accessed By</th>
+              <th>Date</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+                logs.map(log => {
+                    return (
+                      <tr  key={log.Date}>
+                        <td>{log.QR}</td>
+                        <td>{log.AccessedBy}</td>
+                        <td>{log.Date}</td>
+                      </tr>
+                    )
+                })
+            }  
+          </tbody> 
+      </table>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="outline-info" onClick={handleClose}>Close</Button>
+      </Modal.Footer>
+    </Modal>
+  );
+}
+
+
 export default function GenerateQR() {
   var qrcode = useRef()
   const [files, setFiles] = useState([])
@@ -108,6 +182,7 @@ export default function GenerateQR() {
   const [check, setCheck] = useState([])
   const [hide, setHide] = useState(true)
   const [disable, setDisable] = useState(false)
+  const [showLog, setShowLog] = useState(false)
 
   const handleCheck = (e) => {
     const f = e.target.name.split("~~")
@@ -138,7 +213,7 @@ export default function GenerateQR() {
   const handleSubmit = (e) => {
     e.preventDefault()
     var options = {
-      text: `https://maindb-8acfe.web.app/${currentUser.uid}/${data.qr}`,
+      text: `http://localhost:3000/${currentUser.uid}/${data.qr}`,
       width: 200,
       height: 200,
       colorDark : "#31c6e8",
@@ -199,8 +274,10 @@ export default function GenerateQR() {
   return (
     <BasicUI>
     <GenerateQRModal show={show} setShow={setShow}/>
+    <QRLogModal show={showLog} setShow={setShowLog}/>
     <div className="w-100 text-center mt-2">
-    <Button variant="info" onClick={()=>setShow(!show)}>View your QR codes</Button><br/><br/><br/>
+    <Button variant="info" onClick={()=>setShow(!show)} className="fa fa-eye mr-4"> QR codes</Button>
+    <Button variant="info" onClick={()=>setShowLog(!showLog)} className="fa fa-history"> Logs</Button><br/><br/>
       <div>
 
       </div>

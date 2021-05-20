@@ -11,6 +11,7 @@ export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState();
   const [loading, setLoading] = useState(true);
   const usersDB = db.collection("users");
+  const logDB = db.collection("logs");
   const storageDB = storage.ref();
 
   function signup(email, password) {
@@ -118,6 +119,17 @@ export function AuthProvider({ children }) {
     return usersDB.doc(uid).get();
   }
 
+  function logUser(uid, qr, owner, date) {
+    const em = currentUser.email ? currentUser.email : "";
+    //add a counter for anonymous accessing of the qr and limit it to a specific number to avoid downlods 
+    //that cannot be tracked.
+    return logDB.doc().set({uid: uid, qrCode: qr, Owner: owner, AccessedBy: em, DateAccessed: date});
+  }
+
+  function getLog() {
+    return logDB.where('Owner', '==', currentUser.email).orderBy('DateAccessed', 'desc').get()
+  }
+
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user => {
       setCurrentUser(user)
@@ -127,6 +139,8 @@ export function AuthProvider({ children }) {
   }, [])
 
   const value = {
+    getLog,
+    logUser,
     currentUser,
     anonymousLogin,
     storeQR,
