@@ -213,7 +213,7 @@ export default function GenerateQR() {
   const handleSubmit = (e) => {
     e.preventDefault()
     var options = {
-      text: `http://localhost:3000/${currentUser.uid}/${data.qr}`,
+      text: `https://maindb-8acfe.web.app/${currentUser.uid}/${data.qr}`,
       width: 200,
       height: 200,
       colorDark : "#31c6e8",
