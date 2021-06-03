@@ -5,7 +5,7 @@ const serviceAccount = require('./serviceAccountKey.json');
 const api = require('./api.js');
  
 var smsMessage = new api.SmsMessage();
-var smsApi = new api.SMSApi("aleksis.canlas206@gmail.com", "5D440AC9-B380-5EE1-69E1-BD480439E665");
+var smsApi = new api.SMSApi("direteam510@gmail.com", "BB7E502B-A545-E618-1225-C3E6D70630C0");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
@@ -44,29 +44,30 @@ cron.schedule('10 * * * * *', () => {
               if(doc.data().Disabled === false){
                 await db.collection('users').doc(doc.data().uid).collection('files').doc(doc.data().FileName).set({Disabled: true}, {merge: true}).catch(err => console.log(err, 'error in disabling file query'))
                 //Email Notification
-                const mailOptions = {
-                  from: 'direteam510@gmail.com',
-                  to: em,
-                  subject: 'Your File is about to Expire!',
-                  html: `
-                          <div>Greetings from DIRe Team!</div>
-                          <p>You are receiving this notication for your expired file <a href=${doc.data().URL}">${doc.data().FileName}</a>, Expiring this ${doc.data().FileExpiry}.</p>
-                          <p>All QR codes that includes this file would be disabled.</p>
-                          <p>Visit our website: https://maindb-8acfe.web.app/ </p>
-                        `
-                };
+                // const mailOptions = {
+                //   from: 'direteam510@gmail.com',
+                //   to: em,
+                //   subject: 'Your File is about to Expire!',
+                //   html: `
+                //           <div>Greetings from DIRe Team!</div>
+                //           <p>You are receiving this notication for your expired file <a href=${doc.data().URL}">${doc.data().FileName}</a>, Expiring this ${doc.data().FileExpiry}.</p>
+                //           <p>All QR codes that includes this file would be disabled.</p>
+                //           <p>Visit our website: https://maindb-8acfe.web.app/ </p>
+                //         `
+                // };
 
-                transporter.sendMail(mailOptions, (error, info) => {
-                  if(error){
-                      console.log(error)
-                  }else{
-                      console.log(`Email to ${em} on file ${doc.data().FileName} Sent! ` + info.response)
-                  }
-                })
+                // transporter.sendMail(mailOptions, (error, info) => {
+                //   if(error){
+                //       console.log(error)
+                //   }else{
+                //       console.log(`Email to ${em} on file ${doc.data().FileName} Sent! ` + info.response)
+                //   }
+                // })
                 
                 //SMS notification 
+                console.log('+63'+em[1].substring(1))
                 smsMessage.from = "DIRe Team";
-                smsMessage.to = `${em[1]}`;
+                smsMessage.to = `${'+63',em[1].substring(1)}`;
                 smsMessage.body = `Greetings from DIRe Team, Your file ${doc.data().FileName} is expiring \n 
                                     All QR Codes that has this file would be disabled\n
                                     Visit our site: https://maindb-8acfe.web.app/`;

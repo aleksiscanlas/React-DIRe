@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react"
-import { useAuth } from "../contexts/AuthContext"
-import { useParams } from 'react-router-dom'
-import { Image, Button } from 'react-bootstrap'
-import { Link } from "react-router-dom"
-import logo from "./images/dire-logo.png"
-import * as JSZip from 'jszip'
-import * as JSZipUtils from 'jszip-utils'
+import React, { useState, useEffect } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import { useParams } from 'react-router-dom';
+import { Image, Button } from 'react-bootstrap';
+import { Link } from "react-router-dom";
+import logo from "./images/dire-logo.png";
+import * as JSZip from 'jszip';
+import * as JSZipUtils from 'jszip-utils';
+import BasicUI from './BasicUI';
 
 const Owner = (props) => {
     return (
@@ -37,13 +38,15 @@ export default function ScanQR() {
     const getDataAndUser = async() => {
         //retrieve qr record
         await retrieveQRData(uid, qr).then(snapshot => {
-            if(!snapshot.exists) {
+            if(snapshot.docs.length > 0){
                 snapshot.docs.map(doc => {
                     if (Date.parse(currDate) >= Date.parse(doc.data().expires)) {
                         return setExpired(true)
                     }
                     return setFiles([...doc.data().files])
                 })
+            }else{
+                setExpired(true)
             }
         }).catch(err => console.log(err));
         //retrieve qr owner data  
@@ -96,7 +99,15 @@ export default function ScanQR() {
 
     return (
         <div>
-            {expired ? <div>Sorry! The QR Code you Scanned may have an expired file in it</div>:
+            {expired ?  <BasicUI styling="text-center"> 
+                        <div className = "font-weight-bold text-center text-danger">
+                        <h1>OOPS!</h1>
+                        <h3>403 - Access Denied</h3>
+                        <h5>Sorry! This page might have an expired or invalid QR Code.</h5>
+                        <Link to="/" class="font-weight-normal"><br/>🡠 Back</Link>
+                        </div>
+                        </BasicUI>
+                :
                 <div className="text-center"> 
                     <Link to="/">
                         <Image src={logo} fluid/>

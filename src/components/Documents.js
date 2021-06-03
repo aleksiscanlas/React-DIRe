@@ -42,28 +42,42 @@ export default function Documents() {
 
   async function handleSubmit(e) {
     e.preventDefault()
-    if(fileRef.current.files[0].size/1024/1024 > 30){
+    if(fileRef.current.files[0].size/1024/1024 > 15){
       setError("File Size Limit Exceeded")
     }else{
       const fileName = fileRef.current.files[0].name;
-      if(dateRef.current.value < currDate) expiredFile = true;
-      try{
-        setError("")
-        setLoading(true)
-        await storageRef(fileName, fileRef.current.files[0]).then(() => {
-          addFile(fileName, dateRef.current.value, expiredFile).then(() => {
-              getFiles()
-              setLoading(false)
-              handleClose()
-          }).catch(err => {
-              setError(err.message)
-              setLoading(false)
-          })
-        }).catch(err => {
-          setError(err.message)
-        })
-      } catch {
-        setError("Document Upload Failed")
+      const ext = fileName.match(/\.([^]+)$/)[1];
+      if(ext){
+        switch (ext) {
+          case 'pdf':
+          case 'doc':
+          case 'ppt':
+          case 'docx':
+            try{
+              setError("")
+              setLoading(true)
+              console.log(dateRef.current.value)
+              if(dateRef.current.value !== '' && dateRef.current.value < currDate) expiredFile = true;
+              await storageRef(fileName, fileRef.current.files[0]).then(() => {
+                addFile(fileName, dateRef.current.value, expiredFile).then(() => {
+                    getFiles()
+                    setLoading(false)
+                    handleClose()
+                }).catch(err => {
+                    setError(err.message)
+                    setLoading(false)
+                })
+              }).catch(err => {
+                setError(err.message)
+              })
+            } catch {
+              setError("Document Upload Failed")
+            }
+            break;
+          default:
+            setError('File Type Not Allowed');
+
+        }
       }
     }
   }
@@ -141,6 +155,7 @@ export default function Documents() {
               <Form.Control 
                   type="file" 
                   ref={fileRef}
+                  accept="application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.openxmlformats-officedocument.presentationml.slideshow"
                   required
                   >
               </Form.Control>

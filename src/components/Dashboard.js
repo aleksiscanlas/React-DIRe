@@ -60,7 +60,7 @@ export default function Dashboard() {
         {warning && <Alert variant="warning">{warning}</Alert>}
         {error && <Alert variant="danger">{error}</Alert>}
       </div>
-        <p><strong>Email:</strong> {currentUser.email}</p>
+        {/* <p><strong>Email:</strong> {currentUser.email}</p> */}
         <div className="dashboard-container">
           <Link to="/update-profile" className="dashboard-icon btn mb-3" >
             <DashboardIcons enter={man2} out={man} alt="man-icon" width="120px" height="150px"/>

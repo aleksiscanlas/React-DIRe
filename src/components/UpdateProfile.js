@@ -1,8 +1,43 @@
-import React, { useState } from "react"
-import { Form, Button, Alert } from "react-bootstrap"
+import React, { useState, useEffect } from "react"
+import { Form, Button, Alert, Modal } from "react-bootstrap"
 import { useAuth } from "../contexts/AuthContext"
 import { Link, useHistory } from "react-router-dom"
 import BasicUI from './BasicUI'
+
+function Owner (props) {
+    const handleClose = () => {
+      props.setShow(false);
+    }
+    return (
+      <Modal
+      show={props.show}
+      onHide={handleClose}
+      animation={false}
+      backdrop="static"
+      keyboard={false}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title><strong>Personal Details</strong></Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+            {
+                !props.data ? <p>Retrieving...</p> : 
+                    <>
+                    <p>Name: {`${props.data['Last']}, ${props.data['First']} ${props.data['Middle']} ${props.data['Suffix']}`}</p>
+                    <p>Email: {`${props.data['Email']}`}</p>
+                    <p>Contact: {`${props.data['Contact']}`}</p>
+                    <p>Address: {`${props.data['Address']}`}</p>
+                    <p>Gender: {`${props.data['Gender']}`}</p>
+                    <p>Civil: {`${props.data['Civil']}`}</p>
+                    </>
+            }
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={handleClose}>Close</Button>
+        </Modal.Footer>
+      </Modal>
+    );
+  }
 
 export default function UpdateProfile() {
   const [data, setData] = useState({suffix: '', first: '', middle: '', last: '',
@@ -11,9 +46,11 @@ export default function UpdateProfile() {
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
   const history = useHistory()
+  const [show, setShow] = useState(false);
+  const [profile, setProfile] = useState()
   const [step, setStep] = useState(0);
-  const { updatePassword, updateEmail, 
-    updateUser, reAuthenticateUser } = useAuth()
+  const { currentUser, updatePassword, updateEmail, 
+    updateUser, reAuthenticateUser, getUser } = useAuth()
 
   const handleSubmit = async(e) => {
     e.preventDefault()
@@ -64,6 +101,12 @@ export default function UpdateProfile() {
     setLoading(false)
   }
 
+  const getProfile = async() => {
+    await getUser(currentUser.uid).then(snapshot => {
+        setProfile(snapshot.data())
+    }).catch(err => console.log(err)); 
+  }
+
   const handleChange = (e) => {
     let {name, value} = e.target
     if(name === "selector") value = parseInt(value, 10);
@@ -72,15 +115,21 @@ export default function UpdateProfile() {
     })
   }
 
+  useEffect(() => {
+      getProfile()
+      //eslint-disable-next-line
+  }, [])
+
   return (
     <BasicUI>
+        <Owner data={profile} show={show} setShow={setShow}/>
         <div className="w-50 mx-auto">
             {error && <Alert variant="danger">{error}</Alert>}
         </div>
         <Form className="w-50 mx-auto" onSubmit={handleSubmit}>
             {step === 0 &&
             <>  
-                <Form.Group>
+                <Form.Group className="text-center">
                     <Form.Control as="select" name="selector" className="update-container" onChange={handleChange} value={data.selector}>
                         <option value="1">Update Current Name</option>
                         <option value="2">Update Contact Details</option>
@@ -88,8 +137,9 @@ export default function UpdateProfile() {
                         <option value="4">Update Email</option>
                         <option value="5">Update Password</option>
                     </Form.Control>
+                    <Button variant="info" onClick={() => setStep(data.selector)} className="mt-3 w-100 fa fa-edit">  Change</Button>
                 </Form.Group>
-                <Button variant="info" onClick={() => setStep(data.selector)} className="w-100">Proceed</Button>   
+                <Button className="fa fa-id-badge w-100" variant="info" onClick={() => setShow(!show)}>  Show Profile</Button>
             </>
             }
             {step === 1 && 

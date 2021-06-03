@@ -85,7 +85,7 @@ function GenerateQRModal (props) {
                       <tr key={ar.name}>
                         <td><a download={ar.name} href={ar.url} target="_blank" rel="noopener noreferrer"><img src={ar.url} className="w-75" alt="qr"/></a></td>
                         <td>{ar.name}</td>
-                        <td>{Date.parse(ar.expiry) > Date.parse(currDate) || ar.expiry ? ar.expiry : 'Expired'}</td>
+                        <td>{ar.expiry !== '' && ar.expiry < currDate ? 'Expired' : ar.expiry}</td>
                         <td><input onClick={handleCheck} name={ar.name} type="checkbox"></input></td>
                       </tr>
                     )

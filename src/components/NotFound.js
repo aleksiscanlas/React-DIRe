@@ -2,7 +2,7 @@ import React from 'react'
 import BasicUI from './BasicUI'
 import { Link } from "react-router-dom"
 
-export default function NotFound() {
+export default function NotFound(props) {
     return (
         <BasicUI styling="text-center"> 
         <div className = "font-weight-bold text-center text-danger">
