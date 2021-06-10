@@ -2,7 +2,8 @@ import React, { useState } from "react"
 import { Form, Button, Alert, Modal } from "react-bootstrap"
 import { useAuth } from "../contexts/AuthContext"
 import { Link, useHistory } from "react-router-dom"
-import BasicUI from './BasicUI'
+import loadable from '@loadable/component';
+const BasicUI = loadable(() => import('./BasicUI'));
 
 function DataPrivacyModal (props) {
   const handleClose = () => {
@@ -20,11 +21,13 @@ function DataPrivacyModal (props) {
         <Modal.Title>Data Privacy Consent</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        I understand and concur that by clicking the “I Agree to the Privacy Notice 
+        <p>I understand and concur that by clicking the “I Agree to the Privacy Notice 
         and Give my Consent”, I confirm that I freely and voluntarily give consent 
         to the collection and processing of my data, which may include personal 
         information and/or sensitive information set out in this registration and 
-        application possessed by The Digital Identification Record web application.
+        application possessed by The Digital Identification Record web application.</p>
+
+        By Signing Up to this app, you agree and acknowledge the <a target="_blank" rel="noopener noreferrer" href="https://www.privacypolicies.com/live/7e565f8d-0d18-403c-a115-516a2ae885df" >Privacy Policy</a>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="primary" onClick={handleClose}>Understood</Button>

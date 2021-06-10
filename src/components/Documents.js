@@ -1,8 +1,9 @@
-import React, { useState, useRef, useEffect } from "react"
-import { Row, Button, Modal, Form, Alert } from "react-bootstrap"
-import { Link } from "react-router-dom"
-import { useAuth } from "../contexts/AuthContext"
-import BasicUI from './BasicUI'
+import React, { useState, useRef, useEffect } from "react";
+import { Row, Button, Modal, Form, Alert } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import loadable from '@loadable/component';
+const BasicUI = loadable(() => import('./BasicUI'));
 
 
 function SearchBar(props) {
@@ -10,7 +11,7 @@ function SearchBar(props) {
     <div className="mx-auto input-group mb-2" style={{maxWidth:"400px"}}>
       <input type="text" className="form-control" placeholder="Search..." aria-label="Search..." aria-describedby="basic-addon2" onChange={props.onChange} value={props.value}/>
       <div className="input-group-prepend">
-        <button className="btn btn-outline-secondary rounded fa fa-search" onClick={props.onClick}></button>
+        <button className="btn btn-outline-secondary rounded fa fa-search" name="search-btn" onClick={props.onClick}></button>
       </div>
     </div>
   );
@@ -50,13 +51,13 @@ export default function Documents() {
       if(ext){
         switch (ext) {
           case 'pdf':
+          case 'pptx':
           case 'doc':
           case 'ppt':
           case 'docx':
             try{
               setError("")
               setLoading(true)
-              console.log(dateRef.current.value)
               if(dateRef.current.value !== '' && dateRef.current.value < currDate) expiredFile = true;
               await storageRef(fileName, fileRef.current.files[0]).then(() => {
                 addFile(fileName, dateRef.current.value, expiredFile).then(() => {
@@ -117,9 +118,9 @@ export default function Documents() {
     try {
       setLoading(true)
       await deleteFiles(check).then(() => {
-        getFiles()
         setCheck([]);
       }).then(() => {
+        getFiles()
         setLoading(false);
       })
     } catch(error) {
@@ -155,7 +156,7 @@ export default function Documents() {
               <Form.Control 
                   type="file" 
                   ref={fileRef}
-                  accept="application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.openxmlformats-officedocument.presentationml.slideshow"
+                  accept=".ppt, .docx, .doc, .pdf, .pptx"
                   required
                   >
               </Form.Control>

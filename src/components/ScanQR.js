@@ -6,7 +6,8 @@ import { Link } from "react-router-dom";
 import logo from "./images/dire-logo.png";
 import * as JSZip from 'jszip';
 import * as JSZipUtils from 'jszip-utils';
-import BasicUI from './BasicUI';
+import loadable from '@loadable/component';
+const BasicUI = loadable(() => import('./BasicUI'));
 
 const Owner = (props) => {
     return (
@@ -110,7 +111,7 @@ export default function ScanQR() {
                 :
                 <div className="text-center"> 
                     <Link to="/">
-                        <Image src={logo} fluid/>
+                        <Image src={logo} alt="logo" fluid/>
                     </Link>
                     <div className="d-flex justify-content-center">
                         <div className="text-left pr-2">
@@ -140,7 +141,7 @@ export default function ScanQR() {
                             </table>
                         </div>
                     </div>
-                    <Button className="mt-4 fa fa-download" variant="info" onClick={handleDownload}> Download</Button>
+                    <Button className="mt-4 fa fa-download" title={files ? 'Download Files':'Button is Disabled Found no File to Download'} disabled={files ? false: true} variant="info" onClick={handleDownload}> Download</Button>
                     <div className="mt-5 font-weight-bold">
                         <p>"A digital all-in-one QR code Identifcation system"<br/>
                         DIRe support email: DigIDRecord@gmail.com

@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react"
 import { Form, Button, Alert, Modal } from "react-bootstrap"
 import { useAuth } from "../contexts/AuthContext"
 import { Link, useHistory } from "react-router-dom"
-import BasicUI from './BasicUI'
+import loadable from '@loadable/component';
+const BasicUI = loadable(() => import('./BasicUI'));
 
 function Owner (props) {
     const handleClose = () => {
@@ -22,14 +23,40 @@ function Owner (props) {
         <Modal.Body>
             {
                 !props.data ? <p>Retrieving...</p> : 
-                    <>
-                    <p>Name: {`${props.data['Last']}, ${props.data['First']} ${props.data['Middle']} ${props.data['Suffix']}`}</p>
-                    <p>Email: {`${props.data['Email']}`}</p>
-                    <p>Contact: {`${props.data['Contact']}`}</p>
-                    <p>Address: {`${props.data['Address']}`}</p>
-                    <p>Gender: {`${props.data['Gender']}`}</p>
-                    <p>Civil: {`${props.data['Civil']}`}</p>
-                    </>
+                            <table className="table overflow-scroll" >
+                                <thead>
+                                    <tr>
+                                    <th>#</th>
+                                    <th>Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr key={props.data['Contact']}>
+                                        <td>Name:</td>
+                                        <td>{`${props.data['Last']}, ${props.data['First']} ${props.data['Middle']} ${props.data['Suffix']}`}</td>
+                                    </tr>
+                                    <tr key={props.data['Contact']}>
+                                        <td>Email:</td>
+                                        <td>{`${props.data['Email']}`}</td>
+                                    </tr>
+                                    <tr key={props.data['Contact']}>
+                                        <td>Contact:</td>
+                                        <td>{`${props.data['Contact']}`}</td>
+                                    </tr>
+                                    <tr key={props.data['Contact']}>
+                                        <td>Address:</td>
+                                        <td>{`${props.data['Address']}`}</td>
+                                    </tr>
+                                    <tr key={props.data['Contact']}>
+                                        <td>Gender:</td>
+                                        <td>{`${props.data['Gender']}`}</td>
+                                    </tr>
+                                    <tr key={props.data['Contact']}>
+                                        <td>Civil:</td>
+                                        <td>{`${props.data['Civil']}`}</td>
+                                    </tr>
+                                </tbody> 
+                            </table>
             }
         </Modal.Body>
         <Modal.Footer>

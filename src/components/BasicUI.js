@@ -6,16 +6,17 @@ import logo from "./images/dire-logo.png"
 import logo2 from "./images/park1.png"
 
 export default function BasicUI(props) {
-    const { currentUser } = useAuth() 
+    const { currentUser } = useAuth()
+
     return (
         <Row>
             <Col md={4} className="d-sm-none d-md-block d-none d-sm-block">
-                    <Image src={logo2} className="h-100" fluid/>
+                    <Image src={logo2} className="h-100" alt="logo2" fluid/>
             </Col>
             <Col className={props.styling}>
             <Link to={currentUser ? '/' : '/login'}>
                 <div className="text-center">
-                    <Image src={logo} fluid/>
+                    <Image src={logo} alt="logo" fluid/>
                 </div>
             </Link>
             {props.children}

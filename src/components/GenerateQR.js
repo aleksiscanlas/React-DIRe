@@ -1,10 +1,11 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import * as QRCode from 'easyqrcodejs'
-import BasicUI from './BasicUI'
 import { useAuth } from "../contexts/AuthContext"
 import { Form, Button, Modal} from "react-bootstrap"
-import wmark from "./images/dire-icon.png"
+import wmark from "./images/dire-icon.jpg"
+import loadable from '@loadable/component';
+const BasicUI = loadable(() => import('./BasicUI'));
 
 function GenerateQRModal (props) {
   const { getQR, deleteQR } = useAuth();
@@ -42,10 +43,11 @@ function GenerateQRModal (props) {
     try {
       setLoading(true)
       await deleteQR(check).then(() => {
-        retrieveQR()
+        retrieveQR();
         setCheck([]);
       }).then(() => {
         setLoading(false);
+        handleClose();
       })
     } catch(error) {
       console.log(error)
@@ -213,7 +215,7 @@ export default function GenerateQR() {
   const handleSubmit = (e) => {
     e.preventDefault()
     var options = {
-      text: `https://maindb-8acfe.web.app/${currentUser.uid}/${data.qr}`,
+      text: `localhost:3000/${currentUser.uid}/${data.qr}`,
       width: 200,
       height: 200,
       colorDark : "#31c6e8",
@@ -223,7 +225,6 @@ export default function GenerateQR() {
       logo:wmark,
       logoWidth:50,
       logoHeight:50,
-      logoBackgroundTransparent:false,
       logoBackgroundColor: '#ffffff',
       correctLevel : QRCode.CorrectLevel.H,
     }
@@ -241,8 +242,9 @@ export default function GenerateQR() {
               }
               break;
       default: expires = check[0].expired
-              check.forEach(che => {
-                if(che.expired !== ''){
+               check.forEach(che => {
+                if(expires === '' && che.expired !== ''){
+                }else if(che.expired !== ''){
                   expires = che.expired < expires ? che.expired : expires
                 }
               })
